@@ -36,10 +36,14 @@ pipeline {
                 '''
             }
         }
-        stage('Deploy') {
+        stage('Deploy para Airflow') {
             steps {
                 echo 'Copiando DAGs para o Airflow...'
-                sh 'cp dags/*.py /var/jenkins_home/workspace/portfolio-dados/dags/ 2>/dev/null || echo "Nenhuma DAG para copiar ainda"'
+                sh '''
+                    cp dags/*.py /home/zanca_awanne/portfolio-dados/dags/ 2>/dev/null && echo "DAGs copiadas!" || echo "Nenhuma DAG para copiar"
+                    cp hooks/*.py /home/zanca_awanne/portfolio-dados/dags/ 2>/dev/null || echo "Nenhum Hook para copiar"
+                    cp operators/*.py /home/zanca_awanne/portfolio-dados/dags/ 2>/dev/null || echo "Nenhum Operator para copiar"
+                '''
             }
         }
     }
