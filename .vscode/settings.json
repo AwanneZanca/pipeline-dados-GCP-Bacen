@@ -1,0 +1,4 @@
+{
+    "python.analysis.ignore": ["*"],
+    "python.linting.enabled": false
+}
