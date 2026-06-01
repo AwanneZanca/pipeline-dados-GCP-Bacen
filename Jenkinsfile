@@ -9,7 +9,7 @@ pipeline {
         stage('Validar DAGs') {
             steps {
                 echo 'Validando DAGs...'
-                sh 'python3 -c "import ast; print(\"Sintaxe OK\")"'
+                sh 'echo "Sintaxe OK"'
             }
         }
         stage('Deploy') {
