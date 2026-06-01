@@ -23,3 +23,4 @@ with DAG(
         task_id="busca_taxa_selic",
         python_callable=busca_taxa_selic
     )
+    
