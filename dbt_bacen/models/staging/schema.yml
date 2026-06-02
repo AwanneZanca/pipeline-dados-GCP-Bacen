@@ -1,0 +1,24 @@
+version: 2
+
+models:
+  - name: stg_indicadores
+    description: "Dados padronizados dos indicadores econômicos do BACEN"
+    columns:
+      - name: data
+        description: "Data do indicador"
+        data_tests:
+          - not_null
+      - name: valor
+        description: "Valor do indicador"
+        data_tests:
+          - not_null
+      - name: indicador
+        description: "Nome do indicador econômico"
+        data_tests:
+          - not_null
+          - accepted_values:
+              values: ['TAXA SELIC', 'IPCA', 'IGP-M', 'USD/BRL', 'EUR/BRL', 'DESEMPREGO', 'CREDITO TOTAL']
+      - name: serie
+        description: "Código da série no BACEN"
+        data_tests:
+          - not_null
