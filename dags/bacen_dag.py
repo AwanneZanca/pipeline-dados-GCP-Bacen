@@ -10,7 +10,7 @@
 from airflow import DAG
 
 # Importa o Operator customizado que criamos
-from operators.bacen_operator import BacenOperator
+from bacen_operator import BacenOperator
 
 # Importa datetime para definir a data de início
 from datetime import datetime

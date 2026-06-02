@@ -9,7 +9,7 @@
 from airflow.models import BaseOperator
 
 # Importa o Hook que criamos — ele sabe se conectar ao BACEN
-from hooks.bacen_hook import BacenHook
+from bacen_hook import BacenHook
 
 # Logging para registrar informações no log do Airflow
 import logging
