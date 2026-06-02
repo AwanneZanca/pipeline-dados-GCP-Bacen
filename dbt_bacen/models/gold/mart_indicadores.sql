@@ -1,6 +1,6 @@
 {{ config(
     materialized='table',
-    dataset='dados_economicos_gold'
+    schema ='dados_economicos_gold'
 ) }}
 
 -- ============================================================
