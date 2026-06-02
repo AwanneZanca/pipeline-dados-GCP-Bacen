@@ -8,6 +8,7 @@ from airflow.models import BaseOperator
 from bacen_hook import BacenHook
 from google.cloud import bigquery
 from google.oauth2 import service_account
+from datetime import datetime, timezone
 import logging
 import os
 
