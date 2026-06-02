@@ -1,3 +1,8 @@
+{{ config(
+    materialized='view',
+    schema='silver'
+) }}
+
 -- ============================================================
 -- Model: stg_indicadores (Camada Silver)
 -- Descrição: Padroniza os dados brutos da camada Bronze
