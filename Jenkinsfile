@@ -40,26 +40,9 @@ pipeline {
             steps {
                 echo 'Copiando arquivos para o Airflow...'
                 sh '''
-                    # Copia DAGs
-                    if cp dags/*.py /home/zanca_awanne/portfolio-dados/dags/ 2>/dev/null; then
-                        echo "DAGs copiadas com sucesso!"
-                    else
-                        echo "Nenhuma DAG para copiar"
-                    fi
-
-                    # Copia Hooks
-                    if cp hooks/*.py /home/zanca_awanne/portfolio-dados/dags/ 2>/dev/null; then
-                        echo "Hooks copiados com sucesso!"
-                    else
-                        echo "Nenhum Hook para copiar"
-                    fi
-
-                    # Copia Operators
-                    if cp operators/*.py /home/zanca_awanne/portfolio-dados/dags/ 2>/dev/null; then
-                        echo "Operators copiados com sucesso!"
-                    else
-                        echo "Nenhum Operator para copiar"
-                    fi
+                    cp dags/*.py /airflow_dags/ && echo "DAGs copiadas!" || echo "Erro ao copiar DAGs"
+                    cp hooks/*.py /airflow_dags/ && echo "Hooks copiados!" || echo "Erro ao copiar Hooks"
+                    cp operators/*.py /airflow_dags/ && echo "Operators copiados!" || echo "Erro ao copiar Operators"
                 '''
             }
         }
