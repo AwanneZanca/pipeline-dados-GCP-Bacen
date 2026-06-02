@@ -17,7 +17,8 @@ models:
         data_tests:
           - not_null
           - accepted_values:
-              values: ['TAXA SELIC', 'IPCA', 'IGP-M', 'USD/BRL', 'EUR/BRL', 'DESEMPREGO', 'CREDITO TOTAL']
+              arguments:
+                values: ['TAXA SELIC', 'IPCA', 'IGP-M', 'USD/BRL', 'EUR/BRL', 'DESEMPREGO', 'CREDITO TOTAL']
       - name: serie
         description: "Código da série no BACEN"
         data_tests:
