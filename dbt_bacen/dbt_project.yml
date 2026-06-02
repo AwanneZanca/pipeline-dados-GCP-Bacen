@@ -33,7 +33,6 @@ models:
   dbt_bacen:
     silver:
       +materialized: view
-      +schema: 
     gold:
       +materialized: table
-      +schema: 
+      
