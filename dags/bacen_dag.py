@@ -10,7 +10,7 @@
 from airflow import DAG
 
 # Importa o PythonOperator — permite executar funções Python como tasks
-from airflow.operators.python import PythonOperator
+from airflow.providers.standard.operators.python import PythonOperator
 
 # Importa datetime para definir a data de início da DAG
 from datetime import datetime
