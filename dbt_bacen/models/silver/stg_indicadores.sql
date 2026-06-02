@@ -1,6 +1,6 @@
 {{ config(
     materialized='view',
-    schema='silver'
+    schema='dados_economicos_silver'
 ) }}
 
 -- ============================================================
