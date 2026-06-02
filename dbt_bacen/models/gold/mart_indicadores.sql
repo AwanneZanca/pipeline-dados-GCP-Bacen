@@ -1,3 +1,8 @@
+{{ config(
+    materialized='table',
+    dataset='dados_economicos_gold'
+) }}
+
 -- ============================================================
 -- Model: mart_indicadores (Camada Gold)
 -- Descrição: Dados econômicos prontos para análise e dashboard
@@ -18,7 +23,6 @@ classificado AS (
         serie,
         inserted_at,
 
-        -- Classifica o valor de cada indicador
         CASE indicador
             WHEN 'TAXA SELIC' THEN
                 CASE
@@ -41,7 +45,6 @@ classificado AS (
             ELSE 'N/A'
         END AS classificacao,
 
-        -- Campos de data para facilitar filtros no dashboard
         FORMAT_DATE('%Y-%m', data) AS ano_mes,
         EXTRACT(YEAR FROM data)    AS ano,
         EXTRACT(MONTH FROM data)   AS mes
