@@ -42,7 +42,30 @@ classificado AS (
                     WHEN valor < 4.5 THEN 'Dólar baixo'
                     ELSE 'Normal'
                 END
-            ELSE 'N/A'
+            WHEN 'IGP-M' THEN
+            CASE
+                WHEN valor > 0.5 THEN 'Acima da meta'
+                WHEN valor < 0   THEN 'Deflação'
+                ELSE 'Normal'
+            END
+        WHEN 'DESEMPREGO' THEN
+            CASE
+                WHEN valor > 12 THEN 'Alto'
+                WHEN valor < 8  THEN 'Baixo'
+                ELSE 'Normal'
+            END
+        WHEN 'EUR/BRL' THEN
+            CASE
+                WHEN valor > 6.0 THEN 'Euro alto'
+                WHEN valor < 5.0 THEN 'Euro baixo'
+                ELSE 'Normal'
+            END
+        WHEN 'CREDITO TOTAL' THEN
+            CASE
+                WHEN valor > 15 THEN 'Alto'
+                WHEN valor < 10 THEN 'Baixo'
+                ELSE 'Normal'
+            END
         END AS classificacao,
 
         FORMAT_DATE('%Y-%m', data) AS ano_mes,
