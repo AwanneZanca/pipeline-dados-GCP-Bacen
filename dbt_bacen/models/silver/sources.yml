@@ -3,7 +3,7 @@ version: 2
 sources:
   - name: dados_economicos
     database: voltaic-reducer-396401
-    schema: dados_economicos
+    schema: dados_economicos_bronze
     tables:
       - name: indicadores
         description: "Dados brutos dos indicadores econômicos do BACEN"

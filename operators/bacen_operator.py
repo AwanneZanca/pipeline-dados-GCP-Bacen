@@ -51,7 +51,7 @@ class BacenOperator(BaseOperator):
         } for registro in dados]
 
         # Insere no BigQuery
-        table_id = "voltaic-reducer-396401.dados_economicos.indicadores"
+        table_id = "voltaic-reducer-396401.dados_economicos_bronze.indicadores"
         errors = client.insert_rows_json(table_id, rows)
 
         if errors:

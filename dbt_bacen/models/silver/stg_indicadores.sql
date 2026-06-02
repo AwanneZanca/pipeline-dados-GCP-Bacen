@@ -20,4 +20,4 @@ SELECT
     -- Adiciona timestamp de quando o registro entrou no BigQuery
     CURRENT_TIMESTAMP() AS inserted_at
 
-FROM {{ source('dados_economicos', 'indicadores') }}
+FROM {{ source('dados_economicos_bronze', 'indicadores') }}
