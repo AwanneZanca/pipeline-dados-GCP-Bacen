@@ -1,69 +1,57 @@
 # ============================================================
-# DAG: bacen_selic
-# Descrição: Busca a taxa Selic mais recente da API do Banco
-#            Central do Brasil (BACEN) e imprime no log
+# DAG: painel_economico_brasil
+# Descrição: Busca os principais indicadores econômicos do
+#            Brasil via API do Banco Central (BACEN)
 # Agendamento: diário (@daily)
 # Autor: Awanne Zanca
 # ============================================================
 
-# Importa a classe DAG — é ela que define o fluxo completo
+# Importa a classe DAG — define o fluxo completo
 from airflow import DAG
 
-# Importa o PythonOperator — permite executar funções Python como tasks
-from airflow.providers.standard.operators.python import PythonOperator
+# Importa o Operator customizado que criamos
+from operators.bacen_operator import BacenOperator
 
-# Importa datetime para definir a data de início da DAG
+# Importa datetime para definir a data de início
 from datetime import datetime
 
+# ============================================================
+# Definição dos indicadores que serão buscados
+# Cada indicador vira uma task independente na DAG
+# ============================================================
+INDICADORES = [
+    {"task_id": "busca_selic",      "serie": 11,    "nome": "Taxa Selic"},
+    {"task_id": "busca_ipca",       "serie": 433,   "nome": "IPCA"},
+    {"task_id": "busca_igpm",       "serie": 189,   "nome": "IGP-M"},
+    {"task_id": "busca_dolar",      "serie": 1,     "nome": "USD/BRL"},
+    {"task_id": "busca_euro",       "serie": 21619, "nome": "EUR/BRL"},
+    {"task_id": "busca_desemprego", "serie": 7326,  "nome": "Desemprego"},
+    {"task_id": "busca_credito",    "serie": 4189,  "nome": "Credito Total"},
+]
 
-def busca_taxa_selic():
-    """
-    Função que busca a taxa Selic mais recente na API do BACEN.
-
-    A API do Banco Central disponibiliza séries históricas de dados.
-    A série 11 corresponde à Taxa Selic.
-    O parâmetro 'ultimos/1' retorna apenas o último registro disponível.
-
-    Retorna:
-        list: Lista com o último registro da taxa Selic
-              Exemplo: [{"data": "01/06/2026", "valor": "10.50"}]
-    """
-    # urllib.request é a biblioteca nativa do Python para fazer requisições HTTP
-    import urllib.request
-
-    # json é a biblioteca nativa para converter texto JSON em dicionário Python
-    import json
-
-    # URL da API do BACEN — série 11 = Taxa Selic, últimos 1 registro
-    url = "https://api.bcb.gov.br/dados/serie/bcdata.sgs.11/dados/ultimos/1?formato=json"
-
-    # Faz a requisição HTTP e lê a resposta
-    with urllib.request.urlopen(url) as response:
-
-        # Converte o JSON retornado em lista de dicionários Python
-        data = json.loads(response.read())
-
-        # Imprime o valor no log do Airflow
-        print(f"Taxa Selic: {data[0]['valor']}%")
-
-        # Retorna os dados — pode ser usado por outras tasks via XCom
-        return data
-
-
-# Define a DAG — bloco principal que organiza as tasks
+# ============================================================
+# Definição da DAG
+# ============================================================
 with DAG(
-    dag_id="bacen_selic",            # Nome único da DAG no Airflow
-    start_date=datetime(2026, 1, 1), # Data a partir de quando a DAG é válida
-    schedule="@daily",               # Roda uma vez por dia à meia noite UTC
-    catchup=False,                   # Não reprocessa datas passadas
-    tags=["bacen", "financeiro"]     # Tags para organizar na UI do Airflow
+    dag_id="painel_economico_brasil",   # Nome único da DAG no Airflow
+    start_date=datetime(2026, 1, 1),    # Data a partir de quando a DAG é válida
+    schedule="@daily",                  # Roda uma vez por dia à meia noite UTC
+    catchup=False,                      # Não reprocessa datas passadas
+    tags=["bacen", "financeiro",        # Tags para organizar na UI do Airflow
+          "painel", "brasil"]
 ) as dag:
 
-    # PythonOperator → executa qualquer função Python como uma task
-    busca_selic = PythonOperator(
-        task_id="busca_taxa_selic",       # Nome único da task dentro da DAG
-        python_callable=busca_taxa_selic  # Função que será executada
-    )
+    # Cria uma task para cada indicador dinamicamente
+    # Cada task roda de forma independente — se uma falhar, as outras continuam
+    tasks = []
+    for indicador in INDICADORES:
+        task = BacenOperator(
+            task_id=indicador["task_id"],       # Nome único da task
+            serie=indicador["serie"],           # Código da série no BACEN
+            nome_indicador=indicador["nome"],   # Nome amigável pro log
+        )
+        tasks.append(task)
 
-    # Quando tiver mais tasks, a ordem seria:
-    # busca_selic >> transforma_dados >> salva_no_bigquery
+    # Define a ordem de execução — todas rodam em paralelo
+    # Se quiser sequencial seria: tasks[0] >> tasks[1] >> tasks[2] ...
+    # Em paralelo não precisa definir dependências — o Airflow roda todas ao mesmo tempo
