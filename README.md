@@ -12,10 +12,10 @@ API Pública (BACEN — Banco Central do Brasil)
 Apache Airflow (orquestração)
   └── BacenHook → BacenOperator → 7 indicadores econômicos
         ↓
-BigQuery (data warehouse)
-        ↓
-dbt (modelagem, testes e documentação)
-  └── staging → marts
+BigQuery — Medallion Architecture
+  ├── Bronze → dados brutos (Airflow)
+  ├── Silver → dados limpos (dbt)
+  └── Gold   → dados analíticos (dbt)
         ↓
 Looker Studio / Power BI (dashboards)
 
@@ -41,15 +41,16 @@ CI/CD: GitHub → Jenkins → validação → deploy automático
 ## 📂 Estrutura do Projeto
 
 ```
-portfolio-dados/
+pipeline-dados-GCP-Bacen/
   ├── dags/               → DAGs do Airflow
   ├── hooks/              → BacenHook — conexão com API BACEN
   ├── operators/          → BacenOperator — task customizada
   ├── tests/              → Testes automatizados
   ├── dbt_bacen/          → Projeto dbt
+  │   ├── macros/         → generate_schema_name (Medallion)
   │   ├── models/
-  │   │   ├── staging/    → stg_indicadores (padronização)
-  │   │   └── marts/      → mart_indicadores (análise)
+  │   │   ├── silver/     → stg_indicadores (padronização)
+  │   │   └── gold/       → mart_indicadores (análise)
   │   └── dbt_project.yml
   ├── Jenkinsfile         → Pipeline CI/CD
   └── docker-compose.yaml → Infraestrutura local
@@ -60,7 +61,7 @@ portfolio-dados/
 ## 🚀 DAGs
 
 ### painel_economico_brasil
-Busca os principais indicadores econômicos do Brasil via API do Banco Central, salva no BigQuery e aciona o dbt para modelagem.
+Busca os principais indicadores econômicos do Brasil via API do Banco Central e salva no BigQuery (camada Bronze).
 
 | Task | Indicador | Série BACEN |
 |---|---|---|
@@ -86,7 +87,7 @@ dados = hook.get_dados()
 # → [{"data": "01/06/2026", "valor": "0.0534"}]
 ```
 
-**BacenOperator** — executa o hook como task do Airflow e salva no BigQuery:
+**BacenOperator** — executa o hook como task do Airflow e salva no BigQuery Bronze:
 ```python
 busca_selic = BacenOperator(
     task_id="busca_selic",
@@ -97,15 +98,17 @@ busca_selic = BacenOperator(
 
 ---
 
-## 🧱 Modelos dbt
+## 🧱 Medallion Architecture com dbt
 
 ```
-dados_economicos/
-  ├── indicadores        → tabela bruta (Airflow)
-  ├── stg_indicadores    → view staging (dbt)
-  │     └── padronização de datas, valores e nomes
-  └── mart_indicadores   → view marts (dbt)
-        └── classificações e métricas por indicador
+Bronze → dados_economicos_bronze.indicadores
+  └── dados brutos ingeridos pelo Airflow via API BACEN
+
+Silver → dados_economicos_silver.stg_indicadores
+  └── padronização de datas, valores e nomes (VIEW)
+
+Gold → dados_economicos_gold.mart_indicadores
+  └── classificações, métricas e filtros por período (TABLE)
 ```
 
 **Testes de qualidade (5 testes):**
