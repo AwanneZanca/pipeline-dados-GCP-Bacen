@@ -2,24 +2,24 @@ version: 2
 
 models:
   - name: stg_indicadores
-    description: "Dados padronizados dos indicadores econômicos do BACEN"
+    description: "Camada Silver — dados padronizados e limpos dos indicadores econômicos do BACEN"
     columns:
       - name: data
-        description: "Data do indicador"
+        description: "Data do indicador no formato DATE"
         data_tests:
           - not_null
       - name: valor
-        description: "Valor do indicador"
+        description: "Valor numérico do indicador"
         data_tests:
           - not_null
       - name: indicador
-        description: "Nome do indicador econômico"
+        description: "Nome padronizado do indicador econômico"
         data_tests:
           - not_null
           - accepted_values:
               arguments:
                 values: ['TAXA SELIC', 'IPCA', 'IGP-M', 'USD/BRL', 'EUR/BRL', 'DESEMPREGO', 'CREDITO TOTAL']
       - name: serie
-        description: "Código da série no BACEN"
+        description: "Código da série histórica no BACEN"
         data_tests:
           - not_null

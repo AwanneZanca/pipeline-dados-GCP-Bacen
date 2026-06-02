@@ -1,10 +1,12 @@
 -- ============================================================
--- Model: mart_indicadores
+-- Model: mart_indicadores (Camada Gold)
 -- Descrição: Dados econômicos prontos para análise e dashboard
---            com classificações e variações
+--            com classificações, métricas e filtros de data
+-- Dataset destino: dados_economicos_gold
 -- ============================================================
 
 WITH base AS (
+    -- Lê da camada Silver
     SELECT * FROM {{ ref('stg_indicadores') }}
 ),
 
@@ -16,7 +18,7 @@ classificado AS (
         serie,
         inserted_at,
 
-        -- Classifica cada indicador
+        -- Classifica o valor de cada indicador
         CASE indicador
             WHEN 'TAXA SELIC' THEN
                 CASE
@@ -39,7 +41,7 @@ classificado AS (
             ELSE 'N/A'
         END AS classificacao,
 
-        -- Mês e ano para facilitar filtros no dashboard
+        -- Campos de data para facilitar filtros no dashboard
         FORMAT_DATE('%Y-%m', data) AS ano_mes,
         EXTRACT(YEAR FROM data)    AS ano,
         EXTRACT(MONTH FROM data)   AS mes
