@@ -24,6 +24,6 @@ SELECT
     serie,
 
     -- Timestamp de quando o registro entrou no pipeline
-    inserted_at
+    CURRENT_TIMESTAMP() AS inserted_at
 
 FROM {{ source('dados_economicos_bronze', 'indicadores') }}
