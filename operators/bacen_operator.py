@@ -47,7 +47,8 @@ class BacenOperator(BaseOperator):
             "data": registro['data'],
             "valor": float(registro['valor'].replace(',', '.')),
             "indicador": self.nome_indicador,
-            "serie": self.serie
+            "serie": self.serie,
+            "inserted_at": datetime.now(timezone.utc).isoformat()
         } for registro in dados]
 
         # Insere no BigQuery
