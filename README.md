@@ -15,9 +15,9 @@ Apache Airflow (orquestração)
 BigQuery — Medallion Architecture
   ├── Bronze → dados brutos (Airflow)
   ├── Silver → dados limpos (dbt)
-  └── Gold   → dados analíticos (dbt)
+  └── Gold   → dados analíticos (dbt) — Star Schema
         ↓
-Looker Studio / Power BI (dashboards)
+Looker Studio (dashboards com gráficos de linha — 24 meses)
 
 CI/CD: GitHub → Jenkins → validação → deploy automático
 ```
@@ -51,6 +51,9 @@ pipeline-dados-GCP-Bacen/
   │   ├── models/
   │   │   ├── silver/     → stg_indicadores (padronização)
   │   │   └── gold/       → mart_indicadores (análise)
+  │   │                   → dim_tempo       (Star Schema)
+  │   │                   → dim_indicador   (Star Schema)
+  │   │                   → fato_indicadores (Star Schema)
   │   └── dbt_project.yml
   ├── Jenkinsfile         → Pipeline CI/CD
   └── docker-compose.yaml → Infraestrutura local
@@ -62,6 +65,13 @@ pipeline-dados-GCP-Bacen/
 
 ### painel_economico_brasil
 Busca os principais indicadores econômicos do Brasil via API do Banco Central e salva no BigQuery (camada Bronze).
+
+Suporta dois modos controlados pela variável Airflow `MODO_HISTORICO`:
+
+| Modo | Comportamento |
+|---|---|
+| `false` (padrão) | Busca o último registro diário de cada indicador |
+| `true` | Busca histórico completo de 24 meses (backfill) |
 
 | Task | Indicador | Série BACEN |
 |---|---|---|
@@ -82,7 +92,12 @@ Busca os principais indicadores econômicos do Brasil via API do Banco Central e
 
 **BacenHook** — gerencia a conexão com a API do BACEN:
 ```python
+# Modo incremental — último registro
 hook = BacenHook(serie=11, registros=1)
+
+# Modo histórico — range de datas explícito
+hook = BacenHook(serie=11, data_inicio="01/06/2024")
+
 dados = hook.get_dados()
 # → [{"data": "01/06/2026", "valor": "0.0534"}]
 ```
@@ -92,7 +107,8 @@ dados = hook.get_dados()
 busca_selic = BacenOperator(
     task_id="busca_selic",
     serie=11,
-    nome_indicador="Taxa Selic"
+    nome_indicador="Taxa Selic",
+    modo="incremental"  # ou "historico"
 )
 ```
 
@@ -107,13 +123,34 @@ Bronze → dados_economicos_bronze.indicadores
 Silver → dados_economicos_silver.stg_indicadores
   └── padronização de datas, valores e nomes (VIEW)
 
-Gold → dados_economicos_gold.mart_indicadores
-  └── classificações, métricas e filtros por período (TABLE)
+Gold → dados_economicos_gold
+  ├── mart_indicadores   → classificações e métricas (TABLE)
+  ├── dim_tempo          → dimensão calendário diária (TABLE)
+  ├── dim_indicador      → metadados dos indicadores  (TABLE)
+  └── fato_indicadores   → tabela fato — Star Schema  (TABLE)
+                            particionada por mês
+                            clusterizada por indicador/categoria
 ```
 
-**Testes de qualidade (5 testes):**
-- `not_null` em data, valor, indicador e serie
+**Testes de qualidade (15 testes):**
+- `not_null` e `unique` nas surrogate keys das dimensões
+- `accepted_values` em categoria, mês e trimestre
+- `relationships` — integridade referencial FK → PK entre fato e dimensões
 - `accepted_values` nos nomes dos indicadores
+
+---
+
+## ⭐ Star Schema
+
+```
+        dim_tempo
+            |
+            | fk_tempo
+            |
+dim_indicador — fk_indicador — fato_indicadores
+```
+
+A `fato_indicadores` contém por linha: `valor`, `variacao_absoluta`, `variacao_percentual`, `media_movel_30d` e `media_movel_90d`.
 
 ---
 
