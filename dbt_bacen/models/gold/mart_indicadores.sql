@@ -1,14 +1,15 @@
-{{ config(
-    materialized='table',
-    schema ='dados_economicos_gold'
-) }}
-
 -- ============================================================
 -- Model: mart_indicadores (Camada Gold)
 -- Descrição: Dados econômicos prontos para análise e dashboard
 --            com classificações, métricas e filtros de data
 -- Dataset destino: dados_economicos_gold
 -- ============================================================
+
+{{ config(
+    materialized='table',
+    schema ='dados_economicos_gold'
+) }}
+
 
 WITH base AS (
     -- Lê da camada Silver

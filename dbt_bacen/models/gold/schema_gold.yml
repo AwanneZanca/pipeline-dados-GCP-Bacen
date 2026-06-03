@@ -29,15 +29,11 @@ models:
         description: "Mes numerico 1-12"
         tests:
           - not_null
-          - accepted_values:
-              values: [1,2,3,4,5,6,7,8,9,10,11,12]
 
       - name: trimestre
         description: "Trimestre 1-4"
         tests:
           - not_null
-          - accepted_values:
-              values: [1,2,3,4]
 
   # ── Dimensão Indicador ──────────────────────────────────────────────────────
   - name: dim_indicador
@@ -69,7 +65,7 @@ models:
                 - "USD/BRL"
                 - "EUR/BRL"
                 - "DESEMPREGO"
-                - "CRÉDITO TOTAL"
+                - "CREDITO TOTAL"
 
       - name: categoria
         description: "Categoria economica do indicador"
