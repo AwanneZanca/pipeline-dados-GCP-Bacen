@@ -14,7 +14,7 @@ models:
           - not_null
           - unique
 
-      - name: data_referencia
+      - name: data
         description: "Data no formato DATE"
         tests:
           - not_null
@@ -63,13 +63,13 @@ models:
           - unique
           - accepted_values:
               values:
-                - "Taxa Selic"
+                - "TAXA SELIC"
                 - "IPCA"
                 - "IGP-M"
                 - "USD/BRL"
                 - "EUR/BRL"
-                - "Desemprego"
-                - "Crédito Total"
+                - "DESEMPREGO"
+                - "CRÉDITO TOTAL"
 
       - name: categoria
         description: "Categoria economica do indicador"
@@ -112,7 +112,7 @@ models:
               to: ref('dim_indicador')
               field: sk_indicador
 
-      - name: data_referencia
+      - name: data
         description: "Data de referencia do valor"
         tests:
           - not_null
