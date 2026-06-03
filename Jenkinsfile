@@ -40,11 +40,9 @@ pipeline {
             steps {
                 echo 'Copiando arquivos para o Airflow...'
                 sh '''
-                    AIRFLOW_DAGS=/home/zanca_awanne/portfolio-dados/dags
-
-                    cp dags/*.py $AIRFLOW_DAGS/ && echo "DAGs copiadas!" || echo "Erro ao copiar DAGs"
-                    cp hooks/*.py $AIRFLOW_DAGS/ && echo "Hooks copiados!" || echo "Erro ao copiar Hooks"
-                    cp operators/*.py $AIRFLOW_DAGS/ && echo "Operators copiados!" || echo "Erro ao copiar Operators"
+                    cp dags/*.py /airflow_dags/ && echo "DAGs copiadas!" || echo "Erro ao copiar DAGs"
+                    cp hooks/*.py /airflow_dags/ && echo "Hooks copiados!" || echo "Erro ao copiar Hooks"
+                    cp operators/*.py /airflow_dags/ && echo "Operators copiados!" || echo "Erro ao copiar Operators"
                 '''
             }
         }
