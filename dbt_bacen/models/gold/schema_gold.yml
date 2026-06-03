@@ -9,31 +9,31 @@ models:
       Gerada a partir do range de datas presente em stg_indicadores.
     columns:
       - name: sk_tempo
-        description: Surrogate key - formato AAAAMMDD (ex: 20240115)
+        description: "Surrogate key - formato AAAAMMDD"
         tests:
           - not_null
           - unique
 
       - name: data_referencia
-        description: Data no formato DATE (AAAA-MM-DD)
+        description: "Data no formato DATE"
         tests:
           - not_null
           - unique
 
       - name: ano
-        description: Ano da data (ex: 2024)
+        description: "Ano da data"
         tests:
           - not_null
 
       - name: mes
-        description: Mês numérico 1–12
+        description: "Mes numerico 1-12"
         tests:
           - not_null
           - accepted_values:
               values: [1,2,3,4,5,6,7,8,9,10,11,12]
 
       - name: trimestre
-        description: Trimestre 1–4
+        description: "Trimestre 1-4"
         tests:
           - not_null
           - accepted_values:
@@ -42,23 +42,22 @@ models:
   # ── Dimensão Indicador ──────────────────────────────────────────────────────
   - name: dim_indicador
     description: >
-      Dimensão com metadados dos 7 indicadores econômicos do BACEN:
-      categoria, unidade de medida, frequência e URL da API.
+      Dimensão com metadados dos 7 indicadores economicos do BACEN.
     columns:
       - name: sk_indicador
-        description: Surrogate key gerado por row_number()
+        description: "Surrogate key gerado por row_number"
         tests:
           - not_null
           - unique
 
       - name: codigo_serie_bacen
-        description: Código numérico da série no BACEN (ex: 11 = Selic)
+        description: "Codigo numerico da serie no BACEN"
         tests:
           - not_null
           - unique
 
       - name: nome_indicador
-        description: Nome legível do indicador
+        description: "Nome legivel do indicador"
         tests:
           - not_null
           - unique
@@ -73,7 +72,7 @@ models:
                 - "Crédito Total"
 
       - name: categoria
-        description: Categoria econômica do indicador
+        description: "Categoria economica do indicador"
         tests:
           - not_null
           - accepted_values:
@@ -86,20 +85,19 @@ models:
                 - "Outros"
 
       - name: unidade_medida
-        description: Unidade de medida do indicador (ex: % a.a., R$)
+        description: "Unidade de medida do indicador"
         tests:
           - not_null
 
   # ── Fato Indicadores ────────────────────────────────────────────────────────
   - name: fato_indicadores
     description: >
-      Tabela fato central do Star Schema. Granularidade: 1 linha por indicador
-      por data. Contém o valor do indicador, variações e médias móveis.
-      Particionada por mês e clusterizada por indicador/categoria para
-      performance em queries analíticas.
+      Tabela fato central do Star Schema. Granularidade de 1 linha por
+      indicador por data. Particionada por mes e clusterizada por
+      indicador e categoria.
     columns:
       - name: fk_tempo
-        description: FK para dim_tempo.sk_tempo
+        description: "FK para dim_tempo.sk_tempo"
         tests:
           - not_null
           - relationships:
@@ -107,7 +105,7 @@ models:
               field: sk_tempo
 
       - name: fk_indicador
-        description: FK para dim_indicador.sk_indicador
+        description: "FK para dim_indicador.sk_indicador"
         tests:
           - not_null
           - relationships:
@@ -115,33 +113,33 @@ models:
               field: sk_indicador
 
       - name: data_referencia
-        description: Data de referência do valor (desnormalizada para performance)
+        description: "Data de referencia do valor"
         tests:
           - not_null
 
       - name: nome_indicador
-        description: Nome do indicador (desnormalizado)
+        description: "Nome do indicador"
         tests:
           - not_null
 
       - name: valor
-        description: Valor do indicador na data de referência
+        description: "Valor do indicador na data de referencia"
         tests:
           - not_null
 
       - name: variacao_absoluta
-        description: Diferença absoluta em relação ao registro anterior do mesmo indicador
+        description: "Diferenca absoluta em relacao ao registro anterior"
 
       - name: variacao_percentual
-        description: Variação percentual em relação ao registro anterior (%)
+        description: "Variacao percentual em relacao ao registro anterior"
 
       - name: media_movel_30d
-        description: Média móvel dos últimos 30 dias para o mesmo indicador
+        description: "Media movel dos ultimos 30 dias"
 
       - name: media_movel_90d
-        description: Média móvel dos últimos 90 dias para o mesmo indicador
+        description: "Media movel dos ultimos 90 dias"
 
       - name: codigo_serie_bacen
-        description: Código da série BACEN (desnormalizado)
+        description: "Codigo da serie BACEN"
         tests:
           - not_null

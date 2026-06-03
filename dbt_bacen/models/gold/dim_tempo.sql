@@ -1,8 +1,3 @@
-{{ config(
-    materialized='table',
-    schema='gold'
-) }}
-
 -- ============================================================
 -- Model: dim_tempo (Camada Gold)
 -- Descrição: Dimensão calendário com granularidade diária.
@@ -12,6 +7,11 @@
 -- Depende de: stg_indicadores
 -- Dataset destino: dados_economicos_gold
 -- ============================================================
+
+{{ config(
+    materialized='table',
+    schema='gold'
+) }}
 
 with datas as (
     select distinct data_referencia
@@ -32,18 +32,18 @@ dim as (
         extract(day   from data_referencia)                    as dia,
 
         -- Descrições
-        format_date('%B', data_referencia)                     as nome_mes,      -- Janeiro, Fevereiro…
-        format_date('%b', data_referencia)                     as nome_mes_abrev, -- Jan, Fev…
-        format_date('%Y-%m', data_referencia)                  as ano_mes,        -- 2024-01
+        format_date('%B', data_referencia)                     as nome_mes,
+        format_date('%b', data_referencia)                     as nome_mes_abrev,
+        format_date('%Y-%m', data_referencia)                  as ano_mes,
 
         -- Trimestre
         extract(quarter from data_referencia)                  as trimestre,
         concat('T', extract(quarter from data_referencia),
-               '/', extract(year from data_referencia))        as desc_trimestre, -- T1/2024
+               '/', extract(year from data_referencia))        as desc_trimestre,
 
         -- Semana
         extract(isoweek from data_referencia)                  as semana_iso,
-        extract(dayofweek from data_referencia)                as dia_semana_num, -- 1=Dom … 7=Sáb
+        extract(dayofweek from data_referencia)                as dia_semana_num,
         format_date('%A', data_referencia)                     as dia_semana_nome,
 
         -- Flags úteis
@@ -55,9 +55,9 @@ dim as (
              then true else false end                         as is_ultimo_dia_ano,
 
         case when extract(day from data_referencia) =
-                  extract(day from date_trunc(
-                      date_add(date_trunc(data_referencia, month), interval 1 month),
-                      month) - interval 1 day)
+                  extract(day from date_sub(
+                      date_trunc(date_add(data_referencia, interval 1 month), month),
+                      interval 1 day))
              then true else false end                         as is_ultimo_dia_mes
 
     from datas
