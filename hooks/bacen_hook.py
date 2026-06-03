@@ -6,63 +6,92 @@
 # Autor: Awanne Zanca
 # ============================================================
 
-# BaseHook é a classe base do Airflow para todos os hooks
+# datetime: para converter o formato de data DD/MM/AAAA → AAAA-MM-DD
+# timedelta: para calcular a data de 24 meses atrás
+from datetime import datetime, timedelta
+
+# BaseHook: classe base do Airflow — todo hook customizado herda dela
+# Integra com o sistema de Connections do Airflow (Admin → Connections)
 from airflow.hooks.base import BaseHook
 
-# urllib.request para fazer requisições HTTP sem dependências externas
-import urllib.request
+# requests: biblioteca HTTP para fazer as chamadas à API REST do BACEN
+import requests
 
-# json para converter a resposta da API em dicionário Python
-import json
+# Logging padrão do Python — os logs aparecem na UI do Airflow (task logs)
+import logging
+
+# Cria um logger com o nome do módulo atual (ex: "hooks.bacen_hook")
+logger = logging.getLogger(__name__)
 
 
 class BacenHook(BaseHook):
     """
-    Hook para conexão com a API pública do Banco Central do Brasil.
+    Hook para consumir a API de Séries Temporais do Banco Central do Brasil.
 
-    A API do BACEN disponibiliza séries históricas de indicadores
-    econômicos gratuitamente, sem necessidade de autenticação.
-
-    Séries disponíveis:
-        11    → Taxa Selic
-        433   → IPCA (inflação oficial)
-        189   → IGP-M (inflação mercado)
-        1     → USD/BRL (dólar comercial)
-        21619 → EUR/BRL (euro)
-        7326  → Desemprego
-        4189  → Crédito total
+    Parâmetros
+    ----------
+    serie : int
+        Código da série temporal no BACEN (ex: 11 = Selic, 433 = IPCA)
+    registros : int
+        Número de registros mais recentes a buscar. Use 730 para ~24 meses.
+    data_inicio : str, opcional
+        Data de início no formato DD/MM/AAAA. Se informado, ignora `registros`.
+    data_fim : str, opcional
+        Data de fim no formato DD/MM/AAAA. Padrão: hoje.
     """
 
-    # URL base da API do BACEN
-    BASE_URL = "https://api.bcb.gov.br/dados/serie/bcdata.sgs.{serie}/dados/ultimos/{registros}?formato=json"
+    conn_name_attr = "bacen_default"
+    default_conn_name = "bacen_default"
+    conn_type = "http"
+    hook_name = "BACEN API"
 
-    def __init__(self, serie: int, registros: int = 1):
-        """
-        Inicializa o hook com a série e quantidade de registros.
+    BASE_URL = "https://api.bcb.gov.br/dados/serie/bcdata.sgs.{serie}/dados"
 
-        Args:
-            serie: Código da série histórica do BACEN
-            registros: Quantidade de registros a buscar (padrão: 1)
-        """
+    def __init__(
+        self,
+        serie: int,
+        registros: int = 1,
+        data_inicio: str = None,
+        data_fim: str = None,
+    ):
         super().__init__()
         self.serie = serie
         self.registros = registros
+        self.data_inicio = data_inicio
+        self.data_fim = data_fim or datetime.today().strftime("%d/%m/%Y")
 
-    def get_dados(self) -> list:
+    def get_dados(self) -> list[dict]:
         """
-        Busca os dados da série na API do BACEN.
+        Busca os dados da série temporal.
 
-        Returns:
-            list: Lista de registros com 'data' e 'valor'
-            Exemplo: [{"data": "01/06/2026", "valor": "10.50"}]
+        Retorna lista de dicts com chaves 'data' e 'valor'.
         """
-        # Monta a URL com a série e quantidade de registros
-        url = self.BASE_URL.format(
-            serie=self.serie,
-            registros=self.registros
-        )
+        if self.data_inicio:
+            url = self.BASE_URL.format(serie=self.serie)
+            params = {
+                "formato": "json",
+                "dataInicial": self.data_inicio,
+                "dataFinal": self.data_fim,
+            }
+            logger.info(
+                f"[BacenHook] Buscando série {self.serie} de {self.data_inicio} até {self.data_fim}"
+            )
+        else:
+            url = self.BASE_URL.format(serie=self.serie) + f"/ultimos/{self.registros}"
+            params = {"formato": "json"}
+            logger.info(
+                f"[BacenHook] Buscando últimos {self.registros} registros da série {self.serie}"
+            )
 
-        # Faz a requisição e retorna os dados
-        with urllib.request.urlopen(url) as response:
-            data = json.loads(response.read())
-            return data
+        response = requests.get(url, params=params, timeout=30)
+        response.raise_for_status()
+
+        dados = response.json()
+        logger.info(f"[BacenHook] {len(dados)} registros recebidos para série {self.serie}")
+        return dados
+
+    @staticmethod
+    def calcular_data_inicio_24_meses() -> str:
+        """Retorna a data de 24 meses atrás no formato DD/MM/AAAA."""
+        data = datetime.today() - timedelta(days=730)
+        return data.strftime("%d/%m/%Y")

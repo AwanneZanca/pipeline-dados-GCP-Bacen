@@ -1,0 +1,147 @@
+version: 2
+
+models:
+
+  # ── Dimensão Tempo ──────────────────────────────────────────────────────────
+  - name: dim_tempo
+    description: >
+      Dimensão calendário com granularidade diária.
+      Gerada a partir do range de datas presente em stg_indicadores.
+    columns:
+      - name: sk_tempo
+        description: Surrogate key — formato AAAAMMDD (ex: 20240115)
+        tests:
+          - not_null
+          - unique
+
+      - name: data_referencia
+        description: Data no formato DATE (AAAA-MM-DD)
+        tests:
+          - not_null
+          - unique
+
+      - name: ano
+        description: Ano da data (ex: 2024)
+        tests:
+          - not_null
+
+      - name: mes
+        description: Mês numérico 1–12
+        tests:
+          - not_null
+          - accepted_values:
+              values: [1,2,3,4,5,6,7,8,9,10,11,12]
+
+      - name: trimestre
+        description: Trimestre 1–4
+        tests:
+          - not_null
+          - accepted_values:
+              values: [1,2,3,4]
+
+  # ── Dimensão Indicador ──────────────────────────────────────────────────────
+  - name: dim_indicador
+    description: >
+      Dimensão com metadados dos 7 indicadores econômicos do BACEN:
+      categoria, unidade de medida, frequência e URL da API.
+    columns:
+      - name: sk_indicador
+        description: Surrogate key gerado por row_number()
+        tests:
+          - not_null
+          - unique
+
+      - name: codigo_serie_bacen
+        description: Código numérico da série no BACEN (ex: 11 = Selic)
+        tests:
+          - not_null
+          - unique
+
+      - name: nome_indicador
+        description: Nome legível do indicador
+        tests:
+          - not_null
+          - unique
+          - accepted_values:
+              values:
+                - "Taxa Selic"
+                - "IPCA"
+                - "IGP-M"
+                - "USD/BRL"
+                - "EUR/BRL"
+                - "Desemprego"
+                - "Crédito Total"
+
+      - name: categoria
+        description: Categoria econômica do indicador
+        tests:
+          - not_null
+          - accepted_values:
+              values:
+                - "Política Monetária"
+                - "Inflação"
+                - "Câmbio"
+                - "Mercado de Trabalho"
+                - "Crédito"
+                - "Outros"
+
+      - name: unidade_medida
+        description: Unidade de medida do indicador (ex: % a.a., R$)
+        tests:
+          - not_null
+
+  # ── Fato Indicadores ────────────────────────────────────────────────────────
+  - name: fato_indicadores
+    description: >
+      Tabela fato central do Star Schema. Granularidade: 1 linha por indicador
+      por data. Contém o valor do indicador, variações e médias móveis.
+      Particionada por mês e clusterizada por indicador/categoria para
+      performance em queries analíticas.
+    columns:
+      - name: fk_tempo
+        description: FK para dim_tempo.sk_tempo
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_tempo')
+              field: sk_tempo
+
+      - name: fk_indicador
+        description: FK para dim_indicador.sk_indicador
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_indicador')
+              field: sk_indicador
+
+      - name: data_referencia
+        description: Data de referência do valor (desnormalizada para performance)
+        tests:
+          - not_null
+
+      - name: nome_indicador
+        description: Nome do indicador (desnormalizado)
+        tests:
+          - not_null
+
+      - name: valor
+        description: Valor do indicador na data de referência
+        tests:
+          - not_null
+
+      - name: variacao_absoluta
+        description: Diferença absoluta em relação ao registro anterior do mesmo indicador
+
+      - name: variacao_percentual
+        description: Variação percentual em relação ao registro anterior (%)
+
+      - name: media_movel_30d
+        description: Média móvel dos últimos 30 dias para o mesmo indicador
+
+      - name: media_movel_90d
+        description: Média móvel dos últimos 90 dias para o mesmo indicador
+
+      - name: codigo_serie_bacen
+        description: Código da série BACEN (desnormalizado)
+        tests:
+          - not_null
