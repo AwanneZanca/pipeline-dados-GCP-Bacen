@@ -8,10 +8,7 @@
 -- Dataset destino: dados_economicos_gold
 -- ============================================================
 
-{{ config(
-    materialized='table',
-    schema='gold'
-) }}
+{{ config(materialized='table') }}
 
 with datas as (
     select distinct data

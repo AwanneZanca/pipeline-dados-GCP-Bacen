@@ -11,7 +11,6 @@
 
 {{ config(
     materialized='table',
-    schema='gold',
     partition_by={
         "field": "data",
         "data_type": "date",

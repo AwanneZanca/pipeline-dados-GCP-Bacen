@@ -7,10 +7,7 @@
 -- Dataset destino: dados_economicos_gold
 -- ============================================================
 
-{{ config(
-    materialized='table',
-    schema='gold'
-) }}
+{{ config(materialized='table') }}
 
 with indicadores_raw as (
     select distinct
