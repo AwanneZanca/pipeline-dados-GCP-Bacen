@@ -13,7 +13,7 @@ from airflow import DAG
 from bacen_operator import BacenOperator
 
 # Importa datetime para definir a data de início
-from datetime import datetime
+from datetime import datetime, timedelta
 
 # Importa Variable para configurar o modo histórico via Airflow UI
 from airflow.models import Variable
