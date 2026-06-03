@@ -9,7 +9,7 @@ models:
       Gerada a partir do range de datas presente em stg_indicadores.
     columns:
       - name: sk_tempo
-        description: Surrogate key — formato AAAAMMDD (ex: 20240115)
+        description: Surrogate key - formato AAAAMMDD (ex: 20240115)
         tests:
           - not_null
           - unique

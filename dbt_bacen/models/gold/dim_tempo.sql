@@ -1,11 +1,17 @@
--- models/gold/dim_tempo.sql
--- Dimensão Tempo — granularidade diária
--- Gerada a partir do intervalo de datas presente em stg_indicadores
-
 {{ config(
     materialized='table',
     schema='gold'
 ) }}
+
+-- ============================================================
+-- Model: dim_tempo (Camada Gold)
+-- Descrição: Dimensão calendário com granularidade diária.
+--            Gerada a partir do range de datas presente em
+--            stg_indicadores. Contém atributos de ano, mês,
+--            trimestre, semana e flags úteis para análise.
+-- Depende de: stg_indicadores
+-- Dataset destino: dados_economicos_gold
+-- ============================================================
 
 with datas as (
     select distinct data_referencia
