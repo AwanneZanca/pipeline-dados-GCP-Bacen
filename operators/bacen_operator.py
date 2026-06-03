@@ -11,9 +11,6 @@ from datetime import datetime, timedelta
 # BaseOperator: classe base do Airflow — toda task customizada herda dela
 from airflow.models import BaseOperator
 
-# Cliente oficial do Google para interagir com o BigQuery
-from google.cloud import bigquery
-
 # Hook customizado que faz a chamada à API do BACEN
 from bacen_hook import BacenHook
 
@@ -65,6 +62,9 @@ class BacenOperator(BaseOperator):
         self.registros = registros
 
     def execute(self, context):
+        # Importa BigQuery dentro do execute para evitar timeout no import da DAG
+        from google.cloud import bigquery
+
         logger.info(
             f"[BacenOperator] Iniciando '{self.nome_indicador}' "
             f"(série {self.serie}) — modo: {self.modo}"

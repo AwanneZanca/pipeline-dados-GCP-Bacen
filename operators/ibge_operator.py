@@ -11,9 +11,6 @@ from datetime import datetime, timedelta
 # BaseOperator: classe base do Airflow — toda task customizada herda dela
 from airflow.models import BaseOperator
 
-# Cliente oficial do Google para interagir com o BigQuery
-from google.cloud import bigquery
-
 # Hook customizado que faz a chamada à API do IBGE SIDRA
 from ibge_hook import IbgeHook
 
@@ -82,6 +79,9 @@ class IbgeOperator(BaseOperator):
         self.modo = modo
 
     def execute(self, context):
+        # Importa BigQuery dentro do execute para evitar timeout no import da DAG
+        from google.cloud import bigquery
+
         logger.info(
             f"[IbgeOperator] Iniciando '{self.nome_indicador}' "
             f"(tabela {self.tabela}) — modo: {self.modo}"
@@ -131,8 +131,8 @@ class IbgeOperator(BaseOperator):
 
             rows.append(
                 {
-                    "periodo": item.get("D2C", item.get("D3C", "")),   # código do período
-                    "periodo_desc": item.get("D2N", item.get("D3N", "")),  # descrição ex: "1º trimestre 2024"
+                    "periodo": item.get("D2C", item.get("D3C", "")),
+                    "periodo_desc": item.get("D2N", item.get("D3N", "")),
                     "valor": valor,
                     "indicador": self.nome_indicador,
                     "tabela": self.tabela,
@@ -140,7 +140,7 @@ class IbgeOperator(BaseOperator):
                     "localidade_cod": item.get("D1C", "1"),
                     "localidade_nome": item.get("D1N", "Brasil"),
                     "nivel_geo": self.nivel_geo,
-                    "classificacao": item.get("D4N", ""),   # ex: categoria do IPCA
+                    "classificacao": item.get("D4N", ""),
                     "ingestao_ts": datetime.utcnow().isoformat(),
                 }
             )
