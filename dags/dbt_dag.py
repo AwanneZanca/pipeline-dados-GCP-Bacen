@@ -6,9 +6,16 @@
 # Autor: Awanne Zanca
 # ============================================================
 
+# Importa a classe DAG — define o fluxo completo
 from airflow import DAG
+
+# Importa o Operator para rodar comandos bash (usado para rodar dbt)
 from airflow.operators.bash import BashOperator
+
+# Importa o Sensor para esperar outra DAG terminar (BACEN)
 from airflow.sensors.external_task import ExternalTaskSensor
+
+# Importa datetime para definir a data de início
 from datetime import datetime
 
 with DAG(
