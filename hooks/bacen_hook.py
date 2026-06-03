@@ -11,33 +11,18 @@
 from datetime import datetime, timedelta
 
 # BaseHook: classe base do Airflow — todo hook customizado herda dela
-# Integra com o sistema de Connections do Airflow (Admin → Connections)
 from airflow.hooks.base import BaseHook
-
-# requests: biblioteca HTTP para fazer as chamadas à API REST do BACEN
-import requests
 
 # Logging padrão do Python — os logs aparecem na UI do Airflow (task logs)
 import logging
 
-# Cria um logger com o nome do módulo atual (ex: "hooks.bacen_hook")
+# Cria um logger com o nome do módulo atual
 logger = logging.getLogger(__name__)
 
 
 class BacenHook(BaseHook):
     """
     Hook para consumir a API de Séries Temporais do Banco Central do Brasil.
-
-    Parâmetros
-    ----------
-    serie : int
-        Código da série temporal no BACEN (ex: 11 = Selic, 433 = IPCA)
-    registros : int
-        Número de registros mais recentes a buscar. Use 730 para ~24 meses.
-    data_inicio : str, opcional
-        Data de início no formato DD/MM/AAAA. Se informado, ignora `registros`.
-    data_fim : str, opcional
-        Data de fim no formato DD/MM/AAAA. Padrão: hoje.
     """
 
     conn_name_attr = "bacen_default"
@@ -61,11 +46,10 @@ class BacenHook(BaseHook):
         self.data_fim = data_fim or datetime.today().strftime("%d/%m/%Y")
 
     def get_dados(self) -> list[dict]:
-        """
-        Busca os dados da série temporal.
+        """Busca os dados da série temporal."""
+        # Importa requests dentro do método para evitar timeout no import da DAG
+        import requests
 
-        Retorna lista de dicts com chaves 'data' e 'valor'.
-        """
         if self.data_inicio:
             url = self.BASE_URL.format(serie=self.serie)
             params = {
@@ -73,15 +57,11 @@ class BacenHook(BaseHook):
                 "dataInicial": self.data_inicio,
                 "dataFinal": self.data_fim,
             }
-            logger.info(
-                f"[BacenHook] Buscando série {self.serie} de {self.data_inicio} até {self.data_fim}"
-            )
+            logger.info(f"[BacenHook] Buscando série {self.serie} de {self.data_inicio} até {self.data_fim}")
         else:
             url = self.BASE_URL.format(serie=self.serie) + f"/ultimos/{self.registros}"
             params = {"formato": "json"}
-            logger.info(
-                f"[BacenHook] Buscando últimos {self.registros} registros da série {self.serie}"
-            )
+            logger.info(f"[BacenHook] Buscando últimos {self.registros} registros da série {self.serie}")
 
         response = requests.get(url, params=params, timeout=30)
         response.raise_for_status()
