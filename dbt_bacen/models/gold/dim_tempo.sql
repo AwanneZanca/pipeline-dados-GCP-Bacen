@@ -2,9 +2,9 @@
 -- Model: dim_tempo (Camada Gold)
 -- Descrição: Dimensão calendário com granularidade diária.
 --            Gerada a partir do range de datas presente em
---            stg_indicadores. Contém atributos de ano, mês,
+--            stg_bacen. Contém atributos de ano, mês,
 --            trimestre, semana e flags úteis para análise.
--- Depende de: stg_indicadores
+-- Depende de: stg_bacen
 -- Dataset destino: dados_economicos_gold
 -- ============================================================
 
@@ -12,7 +12,7 @@
 
 with datas as (
     select distinct data
-    from {{ ref('stg_indicadores') }}
+    from {{ ref('stg_bacen') }}
 ),
 
 dim as (

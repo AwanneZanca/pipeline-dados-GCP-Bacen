@@ -2,20 +2,46 @@ version: 2
 
 sources:
   - name: dados_economicos_bronze
-    description: "Camada Bronze — dados brutos ingeridos pelo Airflow via API do BACEN"
+    description: "Camada Bronze — dados brutos ingeridos pelo Airflow"
     database: voltaic-reducer-396401
     schema: dados_economicos_bronze
     tables:
       - name: indicadores
-        description: "Tabela bruta com os indicadores econômicos do Banco Central do Brasil"
+        description: "Indicadores econômicos do BACEN via API de Séries Temporais"
         columns:
           - name: data
-            description: "Data do indicador no formato DD/MM/YYYY (string)"
+            description: "Data no formato AAAA-MM-DD"
+            tests:
+              - not_null
           - name: valor
-            description: "Valor numérico do indicador"
+            description: "Valor do indicador"
+            tests:
+              - not_null
           - name: indicador
-            description: "Nome do indicador econômico (ex: Taxa Selic, IPCA)"
+            description: "Nome do indicador"
+            tests:
+              - not_null
           - name: serie
-            description: "Código da série histórica no BACEN"
-          - name: inserted_at
-            description: "Timestamp de inserção no BigQuery"
+            description: "Código da série no BACEN"
+            tests:
+              - not_null
+
+      - name: ibge
+        description: "Indicadores macroeconômicos do IBGE via API SIDRA"
+        columns:
+          - name: periodo
+            description: "Período no formato IBGE - AAAAMM ou AAAATt"
+            tests:
+              - not_null
+          - name: valor
+            description: "Valor do indicador"
+            tests:
+              - not_null
+          - name: indicador
+            description: "Nome do indicador"
+            tests:
+              - not_null
+          - name: tabela
+            description: "Código da tabela SIDRA"
+            tests:
+              - not_null

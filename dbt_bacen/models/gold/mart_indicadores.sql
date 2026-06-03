@@ -13,7 +13,7 @@
 
 WITH base AS (
     -- Lê da camada Silver
-    SELECT * FROM {{ ref('stg_indicadores') }}
+    SELECT * FROM {{ ref('stg_bacen') }}
 ),
 
 classificado AS (

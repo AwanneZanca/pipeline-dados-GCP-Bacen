@@ -6,7 +6,7 @@ models:
   - name: dim_tempo
     description: >
       Dimensão calendário com granularidade diária.
-      Gerada a partir do range de datas presente em stg_indicadores.
+      Gerada a partir do range de datas presente em stg_indicadores e stg_ibge.
     columns:
       - name: sk_tempo
         description: "Surrogate key - formato AAAAMMDD"
@@ -38,16 +38,12 @@ models:
   # ── Dimensão Indicador ──────────────────────────────────────────────────────
   - name: dim_indicador
     description: >
-      Dimensão com metadados dos 7 indicadores economicos do BACEN.
+      Dimensão com metadados de todos os indicadores economicos —
+      BACEN e IBGE (SIDRA). Inclui categoria, unidade de medida,
+      frequencia, fonte, localidade e classificacao.
     columns:
       - name: sk_indicador
         description: "Surrogate key gerado por row_number"
-        tests:
-          - not_null
-          - unique
-
-      - name: codigo_serie_bacen
-        description: "Codigo numerico da serie no BACEN"
         tests:
           - not_null
           - unique
@@ -56,29 +52,23 @@ models:
         description: "Nome legivel do indicador"
         tests:
           - not_null
-          - unique
+
+      - name: fonte
+        description: "Fonte do indicador - BACEN ou IBGE"
+        tests:
+          - not_null
           - accepted_values:
-              values:
-                - "TAXA SELIC"
-                - "IPCA"
-                - "IGP-M"
-                - "USD/BRL"
-                - "EUR/BRL"
-                - "DESEMPREGO"
-                - "CREDITO TOTAL"
+              values: ["BACEN", "IBGE"]
+
+      - name: localidade
+        description: "Localidade do indicador - Brasil, Sudeste, Nordeste, etc"
+        tests:
+          - not_null
 
       - name: categoria
         description: "Categoria economica do indicador"
         tests:
           - not_null
-          - accepted_values:
-              values:
-                - "Política Monetária"
-                - "Inflação"
-                - "Câmbio"
-                - "Mercado de Trabalho"
-                - "Crédito"
-                - "Outros"
 
       - name: unidade_medida
         description: "Unidade de medida do indicador"
@@ -88,9 +78,10 @@ models:
   # ── Fato Indicadores ────────────────────────────────────────────────────────
   - name: fato_indicadores
     description: >
-      Tabela fato central do Star Schema. Granularidade de 1 linha por
-      indicador por data. Particionada por mes e clusterizada por
-      indicador e categoria.
+      Tabela fato central do Star Schema. Une dados do BACEN e IBGE.
+      Granularidade de 1 linha por indicador + localidade + classificacao
+      por data. Particionada por mes e clusterizada por fonte, categoria
+      e nome do indicador.
     columns:
       - name: fk_tempo
         description: "FK para dim_tempo.sk_tempo"
@@ -118,16 +109,26 @@ models:
         tests:
           - not_null
 
+      - name: fonte
+        description: "Fonte do dado - BACEN ou IBGE"
+        tests:
+          - not_null
+
+      - name: localidade
+        description: "Localidade do indicador"
+        tests:
+          - not_null
+
       - name: valor
         description: "Valor do indicador na data de referencia"
         tests:
           - not_null
 
       - name: variacao_absoluta
-        description: "Diferenca absoluta em relacao ao registro anterior"
+        description: "Diferenca absoluta em relacao ao periodo anterior"
 
       - name: variacao_percentual
-        description: "Variacao percentual em relacao ao registro anterior"
+        description: "Variacao percentual em relacao ao periodo anterior"
 
       - name: media_movel_30d
         description: "Media movel dos ultimos 30 dias"
@@ -135,7 +136,7 @@ models:
       - name: media_movel_90d
         description: "Media movel dos ultimos 90 dias"
 
-      - name: codigo_serie_bacen
-        description: "Codigo da serie BACEN"
+      - name: codigo_serie
+        description: "Codigo da serie BACEN ou tabela IBGE"
         tests:
           - not_null

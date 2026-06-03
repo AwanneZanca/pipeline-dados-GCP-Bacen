@@ -1,7 +1,7 @@
 version: 2
 
 models:
-  - name: stg_indicadores
+  - name: stg_bacen
     description: "Camada Silver — dados padronizados e limpos dos indicadores econômicos do BACEN"
     columns:
       - name: data
