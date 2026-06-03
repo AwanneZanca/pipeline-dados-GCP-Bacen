@@ -15,7 +15,7 @@ from airflow.models import BaseOperator
 from google.cloud import bigquery
 
 # Hook customizado que faz a chamada à API do IBGE SIDRA
-from hooks.ibge_hook import IbgeHook
+from ibge_hook import IbgeHook
 
 # Logging padrão do Python — os logs aparecem na UI do Airflow (task logs)
 import logging
