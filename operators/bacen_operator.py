@@ -15,7 +15,7 @@ from airflow.models import BaseOperator
 from google.cloud import bigquery
 
 # Hook customizado que faz a chamada à API do BACEN
-from hooks.bacen_hook import BacenHook
+from bacen_hook import BacenHook
 
 # Logging padrão do Python — os logs aparecem na UI do Airflow (task logs)
 import logging
