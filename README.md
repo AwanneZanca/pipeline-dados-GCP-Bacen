@@ -2,6 +2,8 @@
 
 Pipeline de dados completo rodando na GCP com orquestração, transformação, modelagem e visualização — usando ferramentas reais de mercado.
 
+> 🔗 [Ver dashboard ao vivo](https://datastudio.google.com/reporting/4bb981cb-9bef-4c27-aa22-1dca3d11bc7b)
+
 ---
 
 ## 🏗️ Arquitetura
