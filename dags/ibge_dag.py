@@ -7,16 +7,10 @@
 # Autor: Awanne Zanca
 # ============================================================
 
-# Importa a classe DAG — define o fluxo completo
 from airflow import DAG
-
-# Importa o Operator customizado que criamos
 from ibge_operator import IbgeOperator
-
-# Importa datetime para definir a data de início
 from datetime import datetime, timedelta
 
-# ── Configurações ────────────────────────────────────────────────────────────
 default_args = {
     "owner": "awanne",
     "depends_on_past": False,
@@ -25,15 +19,25 @@ default_args = {
     "retry_delay": timedelta(minutes=5),
 }
 
+# ── Indicadores IBGE SIDRA ────────────────────────────────────────────────────
+# Tabela 1621 → PIB trimestral (variável 584)
+# Tabela 7060 → IPCA por grupo (variável 2265, classificação 315)
+#   1904 = Alimentação e bebidas
+#   1906 = Habitação
+#   1912 = Transportes
+# Tabela 6381 → Desemprego por região (variável 4099)
+#   Regiões: 1=Norte, 2=Nordeste, 3=Sudeste, 4=Sul, 5=Centro-Oeste
+
 INDICADORES = [
     {
         "task_id": "busca_pib_trimestral",
         "tabela": 1621,
         "variavel": 584,
         "nome": "PIB Trimestral",
-        "classificacao": None,
+        "classificacao_cod": None,
+        "classificacao_cat": None,
         "nivel_geo": "1",
-        "localidade": "1",
+        "localidade": "all",
         "periodo": "last 1",
     },
     {
@@ -41,9 +45,10 @@ INDICADORES = [
         "tabela": 7060,
         "variavel": 2265,
         "nome": "IPCA Alimentação",
-        "classificacao": "315[1904]",
+        "classificacao_cod": "315",
+        "classificacao_cat": "1904",
         "nivel_geo": "1",
-        "localidade": "1",
+        "localidade": "all",
         "periodo": "last 1",
     },
     {
@@ -51,9 +56,10 @@ INDICADORES = [
         "tabela": 7060,
         "variavel": 2265,
         "nome": "IPCA Habitação",
-        "classificacao": "315[1906]",
+        "classificacao_cod": "315",
+        "classificacao_cat": "1906",
         "nivel_geo": "1",
-        "localidade": "1",
+        "localidade": "all",
         "periodo": "last 1",
     },
     {
@@ -61,9 +67,10 @@ INDICADORES = [
         "tabela": 7060,
         "variavel": 2265,
         "nome": "IPCA Transportes",
-        "classificacao": "315[1912]",
+        "classificacao_cod": "315",
+        "classificacao_cat": "1912",
         "nivel_geo": "1",
-        "localidade": "1",
+        "localidade": "all",
         "periodo": "last 1",
     },
     {
@@ -71,7 +78,8 @@ INDICADORES = [
         "tabela": 6381,
         "variavel": 4099,
         "nome": "Desemprego Sudeste",
-        "classificacao": None,
+        "classificacao_cod": None,
+        "classificacao_cat": None,
         "nivel_geo": "2",
         "localidade": "3",
         "periodo": "last 1",
@@ -81,7 +89,8 @@ INDICADORES = [
         "tabela": 6381,
         "variavel": 4099,
         "nome": "Desemprego Nordeste",
-        "classificacao": None,
+        "classificacao_cod": None,
+        "classificacao_cat": None,
         "nivel_geo": "2",
         "localidade": "2",
         "periodo": "last 1",
@@ -91,7 +100,8 @@ INDICADORES = [
         "tabela": 6381,
         "variavel": 4099,
         "nome": "Desemprego Norte",
-        "classificacao": None,
+        "classificacao_cod": None,
+        "classificacao_cat": None,
         "nivel_geo": "2",
         "localidade": "1",
         "periodo": "last 1",
@@ -101,7 +111,8 @@ INDICADORES = [
         "tabela": 6381,
         "variavel": 4099,
         "nome": "Desemprego Sul",
-        "classificacao": None,
+        "classificacao_cod": None,
+        "classificacao_cat": None,
         "nivel_geo": "2",
         "localidade": "4",
         "periodo": "last 1",
@@ -111,14 +122,14 @@ INDICADORES = [
         "tabela": 6381,
         "variavel": 4099,
         "nome": "Desemprego Centro-Oeste",
-        "classificacao": None,
+        "classificacao_cod": None,
+        "classificacao_cat": None,
         "nivel_geo": "2",
         "localidade": "5",
         "periodo": "last 1",
     },
 ]
 
-# ── DAG ──────────────────────────────────────────────────────────────────────
 with DAG(
     dag_id="painel_economico_ibge",
     description="Indicadores macroeconômicos IBGE (SIDRA) → BigQuery Bronze",
@@ -135,7 +146,8 @@ with DAG(
             tabela=ind["tabela"],
             variavel=ind["variavel"],
             nome_indicador=ind["nome"],
-            classificacao=ind["classificacao"],
+            classificacao_cod=ind["classificacao_cod"],
+            classificacao_cat=ind["classificacao_cat"],
             nivel_geo=ind["nivel_geo"],
             localidade=ind["localidade"],
             modo="incremental",

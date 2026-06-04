@@ -6,23 +6,35 @@
 # Autor: Awanne Zanca
 # ============================================================
 
-# datetime: para converter o formato de data e calcular intervalos
-# timedelta: para calcular a data de 24 meses atrás
 from datetime import datetime, timedelta
-
-# BaseHook: classe base do Airflow — todo hook customizado herda dela
-from airflow.sdk.bases.hook import BaseHook
-
-# Logging padrão do Python — os logs aparecem na UI do Airflow (task logs)
+from airflow.hooks.base import BaseHook
 import logging
 
-# Cria um logger com o nome do módulo atual
 logger = logging.getLogger(__name__)
 
 
 class IbgeHook(BaseHook):
     """
     Hook para consumir a API SIDRA do IBGE.
+    
+    Parâmetros
+    ----------
+    tabela : int
+        Código da tabela SIDRA
+    variavel : int
+        Código da variável dentro da tabela
+    nome_indicador : str
+        Nome legível do indicador
+    classificacao_cod : str, opcional
+        Código da classificação (ex: "315")
+    classificacao_cat : str, opcional
+        Código da categoria (ex: "1906")
+    periodo : str
+        Período no formato IBGE (ex: "last 1")
+    nivel_geo : str
+        Nível geográfico: "1" = Brasil, "2" = Região
+    localidade : str
+        Código da localidade
     """
 
     conn_name_attr = "ibge_default"
@@ -37,16 +49,18 @@ class IbgeHook(BaseHook):
         tabela: int,
         variavel: int,
         nome_indicador: str,
-        classificacao: str = None,
-        periodo: str = "last 8",
+        classificacao_cod: str = None,
+        classificacao_cat: str = None,
+        periodo: str = "last 1",
         nivel_geo: str = "1",
-        localidade: str = "1",
+        localidade: str = "all",
     ):
         super().__init__()
         self.tabela = tabela
         self.variavel = variavel
         self.nome_indicador = nome_indicador
-        self.classificacao = classificacao
+        self.classificacao_cod = classificacao_cod
+        self.classificacao_cat = classificacao_cat
         self.periodo = periodo
         self.nivel_geo = nivel_geo
         self.localidade = localidade
@@ -56,14 +70,23 @@ class IbgeHook(BaseHook):
         # Importa requests dentro do método para evitar timeout no import da DAG
         import requests
 
-        url = f"{self.BASE_URL}/t/{self.tabela}/n{self.nivel_geo}/{self.localidade}/v/{self.variavel}/p/{self.periodo}"
+        # Monta URL no padrão SIDRA: /t/{tabela}/n{nivel}/{localidade}/v/{variavel}/p/{periodo}
+        url = (
+            f"{self.BASE_URL}"
+            f"/t/{self.tabela}"
+            f"/n{self.nivel_geo}/{self.localidade}"
+            f"/v/{self.variavel}"
+            f"/p/{self.periodo}"
+        )
 
-        if self.classificacao:
-            url += f"/c{self.classificacao}"
+        # Adiciona classificação se informada: /c{cod}/{cat}
+        if self.classificacao_cod and self.classificacao_cat:
+            url += f"/c{self.classificacao_cod}/{self.classificacao_cat}"
 
         url += "?formato=json"
 
         logger.info(f"[IbgeHook] Buscando tabela {self.tabela} — {self.nome_indicador}")
+        logger.info(f"[IbgeHook] URL: {url}")
 
         response = requests.get(url, timeout=30)
         response.raise_for_status()

@@ -4,20 +4,11 @@
 # Autor: Awanne Zanca
 # ============================================================
 
-# datetime: para converter datas e calcular o intervalo de 24 meses
-# timedelta: para subtrair dias da data atual
 from datetime import datetime, timedelta
-
-# BaseOperator: classe base do Airflow — toda task customizada herda dela
 from airflow.sdk import BaseOperator
-
-# Hook customizado que faz a chamada à API do IBGE SIDRA
 from ibge_hook import IbgeHook
-
-# Logging padrão do Python — os logs aparecem na UI do Airflow (task logs)
 import logging
 
-# Cria um logger com o nome do módulo atual (ex: "operators.ibge_operator")
 logger = logging.getLogger(__name__)
 
 
@@ -32,22 +23,23 @@ class IbgeOperator(BaseOperator):
     variavel : int
         Código da variável dentro da tabela.
     nome_indicador : str
-        Nome legível do indicador (ex: "PIB Trimestral").
-    classificacao : str, opcional
-        Filtro de classificação no formato SIDRA (ex: "315[all]").
+        Nome legível do indicador.
+    classificacao_cod : str, opcional
+        Código da classificação SIDRA (ex: "315" para grupos do IPCA).
+    classificacao_cat : str, opcional
+        Código da categoria (ex: "1906" para Habitação).
     periodo : str
-        Período no formato IBGE (ex: "last 8").
+        Período no formato IBGE (ex: "last 1").
     nivel_geo : str
-        Nível geográfico: "1" = Brasil, "2" = Região, "3" = UF.
+        Nível geográfico: "1" = Brasil, "2" = Região.
     localidade : str
-        Código da localidade (ex: "1" = Brasil).
+        Código da localidade.
     dataset_id : str
-        Dataset do BigQuery (default: dados_economicos_bronze).
+        Dataset do BigQuery.
     table_id : str
-        Tabela do BigQuery (default: ibge).
+        Tabela do BigQuery.
     modo : str
-        'incremental' → últimos N períodos.
-        'historico'   → busca 24 meses/trimestres completos.
+        'incremental' → último período. 'historico' → 24 meses.
     """
 
     template_fields = ("tabela", "nome_indicador")
@@ -57,10 +49,11 @@ class IbgeOperator(BaseOperator):
         tabela: int,
         variavel: int,
         nome_indicador: str,
-        classificacao: str = None,
+        classificacao_cod: str = None,
+        classificacao_cat: str = None,
         periodo: str = "last 1",
         nivel_geo: str = "1",
-        localidade: str = "1",
+        localidade: str = "all",
         dataset_id: str = "dados_economicos_bronze",
         table_id: str = "ibge",
         modo: str = "incremental",
@@ -70,7 +63,8 @@ class IbgeOperator(BaseOperator):
         self.tabela = tabela
         self.variavel = variavel
         self.nome_indicador = nome_indicador
-        self.classificacao = classificacao
+        self.classificacao_cod = classificacao_cod
+        self.classificacao_cat = classificacao_cat
         self.periodo = periodo
         self.nivel_geo = nivel_geo
         self.localidade = localidade
@@ -79,7 +73,6 @@ class IbgeOperator(BaseOperator):
         self.modo = modo
 
     def execute(self, context):
-        # Importa BigQuery dentro do execute para evitar timeout no import da DAG
         from google.cloud import bigquery
 
         logger.info(
@@ -89,20 +82,20 @@ class IbgeOperator(BaseOperator):
 
         # Define período conforme modo
         if self.modo == "historico":
-            # PIB usa trimestres, demais usam meses
-            if self.tabela == 1621:
-                periodo = IbgeHook.calcular_periodo_trimestral_24_meses()
-            else:
-                periodo = IbgeHook.calcular_periodo_24_meses()
+            periodo = (
+                IbgeHook.calcular_periodo_trimestral_24_meses()
+                if self.tabela == 1621
+                else IbgeHook.calcular_periodo_24_meses()
+            )
         else:
             periodo = self.periodo
 
-        # Instancia o hook com o período calculado
         hook = IbgeHook(
             tabela=self.tabela,
             variavel=self.variavel,
             nome_indicador=self.nome_indicador,
-            classificacao=self.classificacao,
+            classificacao_cod=self.classificacao_cod,
+            classificacao_cat=self.classificacao_cat,
             periodo=periodo,
             nivel_geo=self.nivel_geo,
             localidade=self.localidade,
@@ -114,12 +107,10 @@ class IbgeOperator(BaseOperator):
             logger.warning(f"[IbgeOperator] Nenhum dado retornado para '{self.nome_indicador}'")
             return
 
-        # Monta rows para BigQuery
         rows = []
         for item in dados:
             valor_raw = item.get("V", "")
 
-            # Ignora linhas sem valor numérico (ex: cabeçalhos residuais)
             if not valor_raw or valor_raw in ["...", "-", "X"]:
                 continue
 
@@ -149,7 +140,6 @@ class IbgeOperator(BaseOperator):
             logger.warning(f"[IbgeOperator] Nenhuma linha válida para '{self.nome_indicador}'")
             return
 
-        # Envia para BigQuery
         client = bigquery.Client()
         table_ref = f"{client.project}.{self.dataset_id}.{self.table_id}"
 
