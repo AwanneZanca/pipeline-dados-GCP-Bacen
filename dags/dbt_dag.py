@@ -57,4 +57,4 @@ with DAG(
     )
 
     # Ambas as DAGs precisam terminar antes do dbt rodar
-    [aguarda_bacen, aguarda_ibge] >> dbt_run >> dbt_test
+    aguarda_bacen >> dbt_run >> dbt_test
