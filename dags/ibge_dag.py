@@ -21,10 +21,10 @@ default_args = {
 
 # ── Indicadores IBGE SIDRA ────────────────────────────────────────────────────
 # Tabela 1621 → PIB trimestral (variável 584)
-# Tabela 7060 → IPCA por grupo (variável 2265, classificação 315)
-#   1904 = Alimentação e bebidas
-#   1906 = Habitação
-#   1912 = Transportes
+# Tabela 7060 → IPCA por grupo (variável 63 = variação mensal %, classificação 315)
+#   7445 = Alimentação e bebidas
+#   7486 = Habitação
+#   7625 = Transportes
 # Tabela 6381 → Desemprego Brasil - mensal (variável 4099, n1)
 # Tabela 6468 → Desemprego por Grandes Regiões - trimestral (variável 4099, n2)
 #   Regiões: 1=Norte, 2=Nordeste, 3=Sudeste, 4=Sul, 5=Centro-Oeste
@@ -44,10 +44,10 @@ INDICADORES = [
     {
         "task_id": "busca_ipca_alimentacao",
         "tabela": 7060,
-        "variavel": 2265,
+        "variavel": 63,
         "nome": "IPCA Alimentação",
         "classificacao_cod": "315",
-        "classificacao_cat": "1904",
+        "classificacao_cat": "7445",
         "nivel_geo": "1",
         "localidade": "all",
         "periodo": "last1",
@@ -55,10 +55,10 @@ INDICADORES = [
     {
         "task_id": "busca_ipca_habitacao",
         "tabela": 7060,
-        "variavel": 2265,
+        "variavel": 63,
         "nome": "IPCA Habitação",
         "classificacao_cod": "315",
-        "classificacao_cat": "1906",
+        "classificacao_cat": "7486",
         "nivel_geo": "1",
         "localidade": "all",
         "periodo": "last1",
@@ -66,10 +66,10 @@ INDICADORES = [
     {
         "task_id": "busca_ipca_transportes",
         "tabela": 7060,
-        "variavel": 2265,
+        "variavel": 63,
         "nome": "IPCA Transportes",
         "classificacao_cod": "315",
-        "classificacao_cat": "1912",
+        "classificacao_cat": "7625",
         "nivel_geo": "1",
         "localidade": "all",
         "periodo": "last1",

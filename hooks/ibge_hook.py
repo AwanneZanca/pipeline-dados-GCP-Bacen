@@ -100,13 +100,13 @@ class IbgeHook(BaseHook):
         return dados
 
     @staticmethod
-    def calcular_periodo_24_meses() -> str:
-        """Retorna o período dos últimos 24 meses no formato IBGE."""
+    def calcular_periodo_12_meses() -> str:
+        """Retorna o período dos últimos 12 meses no formato IBGE."""
         hoje = datetime.today()
-        inicio = hoje - timedelta(days=730)
+        inicio = hoje - timedelta(days=365)
         return f"{inicio.strftime('%Y%m')}-{hoje.strftime('%Y%m')}"
 
     @staticmethod
-    def calcular_periodo_trimestral_24_meses() -> str:
-        """Retorna os últimos 8 trimestres no formato IBGE."""
-        return "last 8"
+    def calcular_periodo_trimestral_12_meses() -> str:
+        """Retorna os últimos 4 trimestres no formato IBGE."""
+        return "last 4"

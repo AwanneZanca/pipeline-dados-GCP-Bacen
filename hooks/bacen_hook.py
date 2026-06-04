@@ -71,7 +71,7 @@ class BacenHook(BaseHook):
         return dados
 
     @staticmethod
-    def calcular_data_inicio_24_meses() -> str:
-        """Retorna a data de 24 meses atrás no formato DD/MM/AAAA."""
-        data = datetime.today() - timedelta(days=730)
+    def calcular_data_inicio_12_meses() -> str:
+        """Retorna a data de 12 meses atrás no formato DD/MM/AAAA."""
+        data = datetime.today() - timedelta(days=365)
         return data.strftime("%d/%m/%Y")
