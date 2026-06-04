@@ -11,7 +11,7 @@
 from datetime import datetime, timedelta
 
 # BaseHook: classe base do Airflow — todo hook customizado herda dela
-from airflow.hooks.base import BaseHook
+from airflow.sdk.bases.hook import BaseHook
 
 # Logging padrão do Python — os logs aparecem na UI do Airflow (task logs)
 import logging

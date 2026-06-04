@@ -9,7 +9,7 @@
 from datetime import datetime, timedelta
 
 # BaseOperator: classe base do Airflow — toda task customizada herda dela
-from airflow.models import BaseOperator
+from airflow.sdk import BaseOperator
 
 # Hook customizado que faz a chamada à API do IBGE SIDRA
 from ibge_hook import IbgeHook
