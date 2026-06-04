@@ -52,6 +52,6 @@ with DAG(
             serie=ind["serie"],
             nome_indicador=ind["nome"],
             # Modo controlado via DAG params ao disparar manualmente
-            modo="historico",
+            modo="incremental",
             registros=1,
         )

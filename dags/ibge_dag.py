@@ -118,6 +118,6 @@ with DAG(
             classificacao_cat=ind["classificacao_cat"],
             nivel_geo=ind["nivel_geo"],
             localidade=ind["localidade"],
-            modo="historico",
+            modo="incremental",
             periodo=ind["periodo"],
         )
