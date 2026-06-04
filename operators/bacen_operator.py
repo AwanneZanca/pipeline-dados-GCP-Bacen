@@ -95,7 +95,7 @@ class BacenOperator(BaseOperator):
                     "valor": float(item["valor"]),
                     "indicador": self.nome_indicador,
                     "serie": self.serie,
-                    "ingestao_ts": datetime.utcnow().isoformat(),
+                    "inserted_at": datetime.utcnow().isoformat(),
                 }
             )
 
