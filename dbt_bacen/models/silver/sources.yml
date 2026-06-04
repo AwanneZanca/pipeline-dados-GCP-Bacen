@@ -6,7 +6,7 @@ sources:
     database: voltaic-reducer-396401
     schema: dados_economicos_bronze
     tables:
-      - name: indicadores
+      - name: bacen
         description: "Indicadores econômicos do BACEN via API de Séries Temporais"
         columns:
           - name: data
@@ -25,6 +25,8 @@ sources:
             description: "Código da série no BACEN"
             tests:
               - not_null
+          - name: inserted_at
+            description: "Timestamp de ingestão"
 
       - name: ibge
         description: "Indicadores macroeconômicos do IBGE via API SIDRA"
@@ -45,3 +47,5 @@ sources:
             description: "Código da tabela SIDRA"
             tests:
               - not_null
+          - name: inserted_at
+            description: "Timestamp de ingestão"

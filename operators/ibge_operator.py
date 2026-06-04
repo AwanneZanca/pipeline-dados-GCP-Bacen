@@ -141,7 +141,7 @@ class IbgeOperator(BaseOperator):
                     "localidade_nome": item.get("D1N", "Brasil"),
                     "nivel_geo": self.nivel_geo,
                     "classificacao": item.get("D4N", ""),
-                    "ingestao_ts": datetime.utcnow().isoformat(),
+                    "inserted_at": datetime.utcnow().isoformat(),
                 }
             )
 

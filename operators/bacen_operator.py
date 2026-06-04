@@ -33,7 +33,7 @@ class BacenOperator(BaseOperator):
     dataset_id : str
         Dataset do BigQuery (default: dados_economicos_bronze).
     table_id : str
-        Tabela do BigQuery (default: indicadores).
+        Tabela do BigQuery (default: bacen).
     modo : str
         'incremental' → últimos N registros (padrão: 1).
         'historico'   → busca 24 meses completos.
@@ -48,7 +48,7 @@ class BacenOperator(BaseOperator):
         serie: int,
         nome_indicador: str,
         dataset_id: str = "dados_economicos_bronze",
-        table_id: str = "indicadores",
+        table_id: str = "bacen",
         modo: str = "incremental",
         registros: int = 1,
         **kwargs,
