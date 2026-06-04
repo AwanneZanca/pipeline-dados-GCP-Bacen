@@ -109,4 +109,4 @@ class IbgeHook(BaseHook):
     @staticmethod
     def calcular_periodo_trimestral_12_meses() -> str:
         """Retorna os últimos 4 trimestres no formato IBGE."""
-        return "last 4"
+        return "last4"
