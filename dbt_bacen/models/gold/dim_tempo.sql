@@ -10,6 +10,12 @@ with datas as (
     select distinct SAFE.PARSE_DATE('%Y-%m-%d', CAST(data AS STRING)) as data
     from {{ ref('stg_bacen') }}
     where data is not null
+
+    union distinct
+
+    select distinct data
+    from {{ ref('stg_ibge') }}
+    where data is not null
 ),
 
 dim as (
