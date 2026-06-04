@@ -2,7 +2,7 @@
 # DAG: painel_economico_ibge
 # Descrição: Busca indicadores macroeconômicos do IBGE (SIDRA)
 #            e salva no BigQuery camada Bronze.
-#            Complementa o painel_economico_bacen (BACEN).
+#            Complementa o painel_economico_brasil (BACEN).
 # Agendamento: semanal (@weekly)
 # Autor: Awanne Zanca
 # ============================================================
@@ -20,13 +20,14 @@ default_args = {
 }
 
 # ── Indicadores IBGE SIDRA ────────────────────────────────────────────────────
-# Tabela 1621 → PIB trimestral (variável 584)
-# Tabela 7060 → IPCA por grupo (variável 2265, classificação 315)
+# Tabela 1621 → PIB trimestral (variável 584 = Valor encadeado)
+# Tabela 7060 → IPCA por grupo (variável 2265 = variação %)
+#   Classificação 315, categorias:
 #   1904 = Alimentação e bebidas
 #   1906 = Habitação
 #   1912 = Transportes
-# Tabela 6381 → Desemprego por região (variável 4099)
-#   Regiões: 1=Norte, 2=Nordeste, 3=Sudeste, 4=Sul, 5=Centro-Oeste
+# Tabela 6381 → Desemprego (variável 4099 = taxa de desocupação %)
+#   Disponível apenas no nível Brasil (n1)
 
 INDICADORES = [
     {
@@ -38,7 +39,7 @@ INDICADORES = [
         "classificacao_cat": None,
         "nivel_geo": "1",
         "localidade": "all",
-        "periodo": "last 1",
+        "periodo": "last1",
     },
     {
         "task_id": "busca_ipca_alimentacao",
@@ -49,7 +50,7 @@ INDICADORES = [
         "classificacao_cat": "1904",
         "nivel_geo": "1",
         "localidade": "all",
-        "periodo": "last 1",
+        "periodo": "last1",
     },
     {
         "task_id": "busca_ipca_habitacao",
@@ -60,7 +61,7 @@ INDICADORES = [
         "classificacao_cat": "1906",
         "nivel_geo": "1",
         "localidade": "all",
-        "periodo": "last 1",
+        "periodo": "last1",
     },
     {
         "task_id": "busca_ipca_transportes",
@@ -71,62 +72,18 @@ INDICADORES = [
         "classificacao_cat": "1912",
         "nivel_geo": "1",
         "localidade": "all",
-        "periodo": "last 1",
+        "periodo": "last1",
     },
     {
-        "task_id": "busca_desemprego_sudeste",
+        "task_id": "busca_desemprego_brasil",
         "tabela": 6381,
         "variavel": 4099,
-        "nome": "Desemprego Sudeste",
+        "nome": "Desemprego Brasil",
         "classificacao_cod": None,
         "classificacao_cat": None,
-        "nivel_geo": "2",
-        "localidade": "3",
-        "periodo": "last 1",
-    },
-    {
-        "task_id": "busca_desemprego_nordeste",
-        "tabela": 6381,
-        "variavel": 4099,
-        "nome": "Desemprego Nordeste",
-        "classificacao_cod": None,
-        "classificacao_cat": None,
-        "nivel_geo": "2",
-        "localidade": "2",
-        "periodo": "last 1",
-    },
-    {
-        "task_id": "busca_desemprego_norte",
-        "tabela": 6381,
-        "variavel": 4099,
-        "nome": "Desemprego Norte",
-        "classificacao_cod": None,
-        "classificacao_cat": None,
-        "nivel_geo": "2",
-        "localidade": "1",
-        "periodo": "last 1",
-    },
-    {
-        "task_id": "busca_desemprego_sul",
-        "tabela": 6381,
-        "variavel": 4099,
-        "nome": "Desemprego Sul",
-        "classificacao_cod": None,
-        "classificacao_cat": None,
-        "nivel_geo": "2",
-        "localidade": "4",
-        "periodo": "last 1",
-    },
-    {
-        "task_id": "busca_desemprego_centro_oeste",
-        "tabela": 6381,
-        "variavel": 4099,
-        "nome": "Desemprego Centro-Oeste",
-        "classificacao_cod": None,
-        "classificacao_cat": None,
-        "nivel_geo": "2",
-        "localidade": "5",
-        "periodo": "last 1",
+        "nivel_geo": "1",
+        "localidade": "all",
+        "periodo": "last1",
     },
 ]
 

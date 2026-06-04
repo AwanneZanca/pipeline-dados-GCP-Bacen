@@ -63,7 +63,7 @@ pipeline-dados-GCP-Bacen/
 
 ## 🚀 DAGs
 
-### painel_economico_bacen
+### painel_economico_brasil
 Busca os principais indicadores econômicos do Brasil via API do Banco Central e salva no BigQuery (camada Bronze).
 
 Suporta dois modos controlados pela variável Airflow `MODO_HISTORICO`:
