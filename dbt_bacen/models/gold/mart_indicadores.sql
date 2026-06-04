@@ -1,24 +1,18 @@
 -- ============================================================
 -- Model: mart_indicadores (Camada Gold)
 -- Descrição: Dados econômicos prontos para análise e dashboard
---            com classificações, métricas e filtros de data
 -- Dataset destino: dados_economicos_gold
 -- ============================================================
 
-{{ config(
-    materialized='table',
-    schema ='dados_economicos_gold'
-) }}
-
+{{ config(materialized='table') }}
 
 WITH base AS (
-    -- Lê da camada Silver
     SELECT * FROM {{ ref('stg_bacen') }}
 ),
 
 classificado AS (
     SELECT
-        data,
+        SAFE.PARSE_DATE('%Y-%m-%d', CAST(data AS STRING)) as data,
         valor,
         indicador,
         serie,
@@ -44,34 +38,34 @@ classificado AS (
                     ELSE 'Normal'
                 END
             WHEN 'IGP-M' THEN
-            CASE
-                WHEN valor > 0.5 THEN 'Acima da meta'
-                WHEN valor < 0   THEN 'Deflação'
-                ELSE 'Normal'
-            END
-        WHEN 'DESEMPREGO' THEN
-            CASE
-                WHEN valor > 12 THEN 'Alto'
-                WHEN valor < 8  THEN 'Baixo'
-                ELSE 'Normal'
-            END
-        WHEN 'EUR/BRL' THEN
-            CASE
-                WHEN valor > 6.0 THEN 'Euro alto'
-                WHEN valor < 5.0 THEN 'Euro baixo'
-                ELSE 'Normal'
-            END
-        WHEN 'CREDITO TOTAL' THEN
-            CASE
-                WHEN valor > 15 THEN 'Alto'
-                WHEN valor < 10 THEN 'Baixo'
-                ELSE 'Normal'
-            END
+                CASE
+                    WHEN valor > 0.5 THEN 'Acima da meta'
+                    WHEN valor < 0   THEN 'Deflação'
+                    ELSE 'Normal'
+                END
+            WHEN 'DESEMPREGO' THEN
+                CASE
+                    WHEN valor > 12 THEN 'Alto'
+                    WHEN valor < 8  THEN 'Baixo'
+                    ELSE 'Normal'
+                END
+            WHEN 'EUR/BRL' THEN
+                CASE
+                    WHEN valor > 6.0 THEN 'Euro alto'
+                    WHEN valor < 5.0 THEN 'Euro baixo'
+                    ELSE 'Normal'
+                END
+            WHEN 'CREDITO TOTAL' THEN
+                CASE
+                    WHEN valor > 15 THEN 'Alto'
+                    WHEN valor < 10 THEN 'Baixo'
+                    ELSE 'Normal'
+                END
         END AS classificacao,
 
-        FORMAT_DATE('%Y-%m', data) AS ano_mes,
-        EXTRACT(YEAR FROM data)    AS ano,
-        EXTRACT(MONTH FROM data)   AS mes
+        FORMAT_DATE('%Y-%m', SAFE.PARSE_DATE('%Y-%m-%d', CAST(data AS STRING))) AS ano_mes,
+        EXTRACT(YEAR FROM SAFE.PARSE_DATE('%Y-%m-%d', CAST(data AS STRING)))    AS ano,
+        EXTRACT(MONTH FROM SAFE.PARSE_DATE('%Y-%m-%d', CAST(data AS STRING)))   AS mes
 
     FROM base
 )

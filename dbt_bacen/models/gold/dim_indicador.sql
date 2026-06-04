@@ -2,9 +2,7 @@
 -- Model: dim_indicador (Camada Gold)
 -- Descrição: Dimensão com metadados de todos os indicadores
 --            econômicos — BACEN e IBGE (SIDRA).
---            Inclui categoria, unidade de medida, frequência,
---            fonte, localidade e classificação.
--- Depende de: stg_indicadores, stg_ibge
+-- Depende de: stg_bacen, stg_ibge
 -- Dataset destino: dados_economicos_gold
 -- ============================================================
 
@@ -13,11 +11,11 @@
 with bacen as (
     select distinct
         indicador                              as nome_indicador,
-        serie                                  as codigo_serie,
+        CAST(serie AS STRING)                  as codigo_serie,
         'BACEN'                                as fonte,
         'Brasil'                               as localidade,
-        NULL                                   as classificacao
-    from {{ ref('stg_indicadores') }}
+        CAST(NULL AS STRING)                   as classificacao
+    from {{ ref('stg_bacen') }}
 ),
 
 ibge as (
@@ -38,19 +36,14 @@ todos as (
 
 dim as (
     select
-        -- Surrogate key
         row_number() over (
             order by fonte, nome_indicador, localidade
         )                                      as sk_indicador,
-
-        -- Atributos naturais
         nome_indicador,
         codigo_serie,
         fonte,
         localidade,
         classificacao,
-
-        -- Categorização
         case
             when nome_indicador = 'TAXA SELIC'             then 'Política Monetária'
             when nome_indicador in ('IPCA', 'IGP-M')       then 'Inflação'
@@ -61,8 +54,6 @@ dim as (
             when nome_indicador = 'PIB TRIMESTRAL'         then 'Atividade Econômica'
             else 'Outros'
         end                                    as categoria,
-
-        -- Unidade de medida
         case
             when nome_indicador = 'TAXA SELIC'             then '% a.a.'
             when nome_indicador in ('IPCA', 'IGP-M')       then '% a.m.'
@@ -70,24 +61,19 @@ dim as (
             when nome_indicador in ('USD/BRL', 'EUR/BRL')  then 'R$'
             when nome_indicador like 'DESEMPREGO%'         then '%'
             when nome_indicador = 'CREDITO TOTAL'          then 'R$ bilhões'
-            when nome_indicador = 'PIB TRIMESTRAL'         then 'R$ milhões'
+            when nome_indicador = 'PIB TRIMESTRAL'         then 'Número-índice'
             else 'N/A'
         end                                    as unidade_medida,
-
-        -- Frequência de divulgação
         case
             when nome_indicador in ('TAXA SELIC', 'USD/BRL', 'EUR/BRL') then 'Diária'
             when nome_indicador = 'PIB TRIMESTRAL'                       then 'Trimestral'
             else 'Mensal'
         end                                    as frequencia,
-
-        -- Fonte completa
         case fonte
             when 'BACEN' then 'Banco Central do Brasil (BCB)'
             when 'IBGE'  then 'Instituto Brasileiro de Geografia e Estatística (IBGE)'
             else fonte
         end                                    as fonte_completa
-
     from todos
 )
 
