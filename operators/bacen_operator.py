@@ -5,7 +5,7 @@
 # ============================================================
 
 # datetime: para converter datas e calcular o intervalo de 24 meses
-# timedelta: para subtrair dias da data atual (usado em calcular_data_inicio_24_meses)
+# timedelta: para subtrair dias da data atual (usado em calcular_data_inicio_12_meses)
 from datetime import datetime, timedelta
 
 # BaseOperator: classe base do Airflow — toda task customizada herda dela
@@ -72,7 +72,7 @@ class BacenOperator(BaseOperator):
 
         # Instancia hook conforme modo
         if self.modo == "historico":
-            data_inicio = BacenHook.calcular_data_inicio_24_meses()
+            data_inicio = BacenHook.calcular_data_inicio_12_meses()
             hook = BacenHook(
                 serie=self.serie,
                 data_inicio=data_inicio,
