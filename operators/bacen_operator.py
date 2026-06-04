@@ -91,7 +91,7 @@ class BacenOperator(BaseOperator):
         for item in dados:
             rows.append(
                 {
-                    "data_referencia": self._parse_data(item["data"]),
+                    "data": self._parse_data(item["data"]),
                     "valor": float(item["valor"]),
                     "indicador": self.nome_indicador,
                     "serie": self.serie,

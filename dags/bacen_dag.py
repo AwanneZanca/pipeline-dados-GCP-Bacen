@@ -36,7 +36,7 @@ INDICADORES = [
 
 # ── DAG ──────────────────────────────────────────────────────────────────────
 with DAG(
-    dag_id="painel_economico_brasil",
+    dag_id="painel_economico_bacen",
     description="Indicadores econômicos do Brasil — API BACEN → BigQuery Bronze",
     schedule="@daily",
     start_date=datetime(2024, 1, 1),
