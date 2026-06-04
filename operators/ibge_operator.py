@@ -83,7 +83,7 @@ class IbgeOperator(BaseOperator):
         # Define período conforme modo
         if self.modo == "historico":
             periodo = (
-                IbgeHook.calcular_periodo_trimestral_12_mesess()
+                IbgeHook.calcular_periodo_trimestral_12_meses()
                 if self.tabela == 1621
                 else IbgeHook.calcular_periodo_12_meses()
             )
