@@ -133,7 +133,7 @@ services:
         /entrypoint airflow config list >/dev/null
         echo "Change ownership of files in /opt/airflow to ${AIRFLOW_UID}:0"
         chown -R "${AIRFLOW_UID}:0" /opt/airflow/
-        chown -v -R "${AIRFLOW_UID}:0" /opt/airflow/{logs,dags,plugins,config}
+        chown -v -R "${AIRFLOW_UID}:0" /opt/airflow/{logs,plugins,config}
     environment:
       <<: *airflow-common-env
       _AIRFLOW_DB_MIGRATE: 'true'
