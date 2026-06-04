@@ -33,10 +33,10 @@ INDICADORES = [
     {
         "task_id": "busca_pib_trimestral",
         "tabela": 1621,
-        "variavel": 2041,
+        "variavel": 584,
         "nome": "PIB Trimestral",
-        "classificacao_cod": None,
-        "classificacao_cat": None,
+        "classificacao_cod": "11255",
+        "classificacao_cat": "90707",
         "nivel_geo": "1",
         "localidade": "all",
         "periodo": "last1",
