@@ -20,7 +20,7 @@ default_args = {
 }
 
 # ── Indicadores IBGE SIDRA ────────────────────────────────────────────────────
-# Tabela 1621 → PIB trimestral (variável 584)
+# Tabela 1621 → PIB trimestral (variável 2041)
 # Tabela 7060 → IPCA por grupo (variável 63 = variação mensal %, classificação 315)
 #   7445 = Alimentação e bebidas
 #   7486 = Habitação
@@ -33,7 +33,7 @@ INDICADORES = [
     {
         "task_id": "busca_pib_trimestral",
         "tabela": 1621,
-        "variavel": 584,
+        "variavel": 2041,
         "nome": "PIB Trimestral",
         "classificacao_cod": None,
         "classificacao_cat": None,
