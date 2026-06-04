@@ -20,14 +20,14 @@ default_args = {
 }
 
 # ── Indicadores IBGE SIDRA ────────────────────────────────────────────────────
-# Tabela 1621 → PIB trimestral (variável 584 = Valor encadeado)
-# Tabela 7060 → IPCA por grupo (variável 2265 = variação %)
-#   Classificação 315, categorias:
+# Tabela 1621 → PIB trimestral (variável 584)
+# Tabela 7060 → IPCA por grupo (variável 2265, classificação 315)
 #   1904 = Alimentação e bebidas
 #   1906 = Habitação
 #   1912 = Transportes
-# Tabela 6381 → Desemprego (variável 4099 = taxa de desocupação %)
-#   Disponível apenas no nível Brasil (n1)
+# Tabela 6381 → Desemprego Brasil - mensal (variável 4099, n1)
+# Tabela 6468 → Desemprego por Grandes Regiões - trimestral (variável 4099, n2)
+#   Regiões: 1=Norte, 2=Nordeste, 3=Sudeste, 4=Sul, 5=Centro-Oeste
 
 INDICADORES = [
     {
@@ -82,6 +82,17 @@ INDICADORES = [
         "classificacao_cod": None,
         "classificacao_cat": None,
         "nivel_geo": "1",
+        "localidade": "all",
+        "periodo": "last1",
+    },
+    {
+        "task_id": "busca_desemprego_regioes",
+        "tabela": 6468,
+        "variavel": 4099,
+        "nome": "Desemprego Regiões",
+        "classificacao_cod": None,
+        "classificacao_cat": None,
+        "nivel_geo": "2",
         "localidade": "all",
         "periodo": "last1",
     },
