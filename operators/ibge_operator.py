@@ -122,8 +122,8 @@ class IbgeOperator(BaseOperator):
 
             rows.append(
                 {
-                    "periodo": item.get("D2C", item.get("D3C", "")),
-                    "periodo_desc": item.get("D2N", item.get("D3N", "")),
+                    "periodo": item.get("D3C", ""),                
+                    "periodo_desc": item.get("D3N", ""),
                     "valor": valor,
                     "indicador": self.nome_indicador,
                     "tabela": self.tabela,
