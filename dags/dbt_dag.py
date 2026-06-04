@@ -26,10 +26,10 @@ with DAG(
     tags=["dbt", "medallion"]
 ) as dag:
 
-    # Espera o painel_economico_brasil (BACEN) terminar
+    # Espera o painel_economico_bacen (BACEN) terminar
     aguarda_bacen = ExternalTaskSensor(
         task_id="aguarda_bacen",
-        external_dag_id="painel_economico_brasil",
+        external_dag_id="painel_economico_bacen",
         timeout=3600,  # espera até 1 hora
         poke_interval=30,  # verifica a cada 30 segundos
         mode="poke"

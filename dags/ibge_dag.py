@@ -2,7 +2,7 @@
 # DAG: painel_economico_ibge
 # Descrição: Busca indicadores macroeconômicos do IBGE (SIDRA)
 #            e salva no BigQuery camada Bronze.
-#            Complementa o painel_economico_brasil (BACEN).
+#            Complementa o painel_economico_bacen (BACEN).
 # Agendamento: semanal (@weekly)
 # Autor: Awanne Zanca
 # ============================================================

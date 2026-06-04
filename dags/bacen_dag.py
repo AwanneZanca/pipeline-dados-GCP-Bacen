@@ -1,5 +1,5 @@
 # ============================================================
-# DAG: painel_economico_brasil
+# DAG: painel_economico_bacen
 # Descrição: Busca os principais indicadores econômicos do
 #            Brasil via API do Banco Central (BACEN)
 # Agendamento: diário (@daily)
