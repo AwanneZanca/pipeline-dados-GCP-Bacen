@@ -42,6 +42,33 @@ CI/CD: GitHub → Jenkins → validação → deploy automático
 
 ---
 
+## 🚀 Como Rodar Localmente
+
+```bash
+# 1. Clone o repositório
+git clone https://github.com/AwanneZanca/pipeline-dados-GCP-Bacen.git
+cd pipeline-dados-GCP-Bacen
+
+# 2. Configure as variáveis de ambiente
+cp .env.example .env
+# Edite o .env com sua FERNET_KEY e credenciais GCP
+
+# 3. Suba os containers
+docker compose up -d
+
+# 4. Acesse o Airflow
+# http://localhost:8080 (usuário: airflow / senha: airflow)
+
+# 5. Execute as transformações dbt
+cd dbt_bacen
+dbt run --no-partial-parse
+dbt test --no-partial-parse
+```
+
+> **Pré-requisitos:** Docker, Docker Compose e uma conta GCP com BigQuery habilitado.
+
+---
+
 ## 📸 Screenshots
 
 > 💡 Clique no título para abrir • Clique na imagem para ampliar
