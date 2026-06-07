@@ -42,6 +42,40 @@ CI/CD: GitHub → Jenkins → validação → deploy automático
 
 ---
 
+## 📸 Screenshots
+
+### Dashboard — Looker Studio
+
+| Visão Geral | Inflação Detalhada |
+|---|---|
+| ![Visão Geral](imagens/painel_1.png) | ![Inflação](imagens/painel_2.png) |
+
+| Mercado de Trabalho | Atividade Econômica |
+|---|---|
+| ![Mercado de Trabalho](imagens/painel_3.png) | ![Atividade Econômica](imagens/painel_4.png) |
+
+### BigQuery — Camada Bronze
+
+| bacen | ibge |
+|---|---|
+| ![Bronze BACEN](imagens/bronze_bacen.png) | ![Bronze IBGE](imagens/bronze_ibge.png) |
+
+### BigQuery — Camada Gold
+
+| dim_indicador | dim_tempo |
+|---|---|
+| ![dim_indicador](imagens/ind_gold.png) | ![dim_tempo](imagens/tempo_gold.png) |
+
+**fato_indicadores**
+
+![fato_indicadores](imagens/fato_gold.png)
+
+### dbt — 38 Testes Passando
+
+![dbt tests](imagens/dbt_tests.png)
+
+---
+
 ## 📂 Estrutura do Projeto
 
 ```
@@ -55,6 +89,7 @@ pipeline-dados-GCP-Bacen/
   │   │   ├── silver/     → stg_bacen, stg_ibge (padronização)
   │   │   └── gold/       → dim_tempo, dim_indicador, fato_indicadores
   │   └── dbt_project.yml
+  ├── imagens/            → Screenshots do projeto
   ├── Jenkinsfile         → Pipeline CI/CD
   └── docker-compose.yaml → Infraestrutura local (LocalExecutor)
 ```
@@ -223,7 +258,7 @@ Deploy automático pro Airflow
 
 **Awanne Beatriz Zanca**
 
-Analista de Dados & BI com foco em Analytics Engineering — 4+ anos de experiência em Stone, Raízen, Bosch e IBM.
+Analista de Dados com foco em Analytics Engineering — 4+ anos de experiência em Stone, Raízen, Bosch e IBM.
 
 - LinkedIn: [awanne-zanca](https://linkedin.com/in/awanne-zanca)
 - GitHub: [AwanneZanca](https://github.com/AwanneZanca)
