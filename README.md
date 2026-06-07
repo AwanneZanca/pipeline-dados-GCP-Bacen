@@ -66,13 +66,21 @@ CI/CD: GitHub → Jenkins → validação → deploy automático
 |---|---|
 | ![dim_indicador](imagens/ind_gold.png) | ![dim_tempo](imagens/tempo_gold.png) |
 
-**fato_indicadores**
-
-![fato_indicadores](imagens/fato_gold.png)
+| **fato_indicadores** |
+|:---:|
+| ![fato_indicadores](imagens/fato_gold.png) |
 
 ### dbt — 38 Testes Passando
 
-![dbt tests](imagens/dbt_tests.png)
+<p align="center">
+  <img src="imagens/dbt_tests.png" alt="dbt tests">
+</p>
+
+### CI/CD — Jenkins Builds
+
+<p align="center">
+  <img src="imagens/jenkins_builds.png" alt="Jenkins Builds">
+</p>
 
 ---
 
