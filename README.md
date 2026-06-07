@@ -44,54 +44,70 @@ CI/CD: GitHub → Jenkins → validação → deploy automático
 
 ## 📸 Screenshots
 
-### Dashboard — Looker Studio
+> 💡 Clique no título para abrir • Clique na imagem para ampliar
 
+<details>
+<summary><b>Dashboard — Looker Studio</b></summary>
+<br>
 <table>
   <tr>
     <th align="center">Visão Geral</th>
     <th align="center">Inflação Detalhada</th>
   </tr>
   <tr>
-    <td align="center"><img src="imagens/painel_1.png" width="420"></td>
-    <td align="center"><img src="imagens/painel_2.png" width="420"></td>
+    <td align="center"><a href="imagens/painel_1.png"><img src="imagens/painel_1.png" width="420"></a></td>
+    <td align="center"><a href="imagens/painel_2.png"><img src="imagens/painel_2.png" width="420"></a></td>
   </tr>
   <tr>
     <th align="center">Mercado de Trabalho</th>
     <th align="center">Atividade Econômica</th>
   </tr>
   <tr>
-    <td align="center"><img src="imagens/painel_3.png" width="420"></td>
-    <td align="center"><img src="imagens/painel_4.png" width="420"></td>
+    <td align="center"><a href="imagens/painel_3.png"><img src="imagens/painel_3.png" width="420"></a></td>
+    <td align="center"><a href="imagens/painel_4.png"><img src="imagens/painel_4.png" width="420"></a></td>
   </tr>
 </table>
+</details>
 
-### BigQuery — Camada Bronze
+<details>
+<summary><b>BigQuery — Camada Bronze</b></summary>
+<br>
 
 | bacen | ibge |
 |---|---|
-| ![Bronze BACEN](imagens/bronze_bacen.png) | ![Bronze IBGE](imagens/bronze_ibge.png) |
+| [![Bronze BACEN](imagens/bronze_bacen.png)](imagens/bronze_bacen.png) | [![Bronze IBGE](imagens/bronze_ibge.png)](imagens/bronze_ibge.png) |
 
-### BigQuery — Camada Gold
+</details>
+
+<details>
+<summary><b>BigQuery — Camada Gold</b></summary>
+<br>
 
 | dim_indicador | dim_tempo |
 |---|---|
-| ![dim_indicador](imagens/ind_gold.png) | ![dim_tempo](imagens/tempo_gold.png) |
+| [![dim_indicador](imagens/ind_gold.png)](imagens/ind_gold.png) | [![dim_tempo](imagens/tempo_gold.png)](imagens/tempo_gold.png) |
 
 | **fato_indicadores** |
 |:---:|
-| ![fato_indicadores](imagens/fato_gold.png) |
+| [![fato_indicadores](imagens/fato_gold.png)](imagens/fato_gold.png) |
 
-### dbt — 38 Testes Passando
+</details>
 
+<details>
+<summary><b>dbt — 38 Testes Passando</b></summary>
+<br>
 <p align="center">
-  <img src="imagens/dbt_tests.png" alt="dbt tests">
+  <a href="imagens/dbt_tests.png"><img src="imagens/dbt_tests.png" alt="dbt tests"></a>
 </p>
+</details>
 
-### CI/CD — Jenkins Builds
-
+<details>
+<summary><b>CI/CD — Jenkins Builds</b></summary>
+<br>
 <p align="center">
-  <img src="imagens/jenkins_builds.png" alt="Jenkins Builds">
+  <a href="imagens/jenkins_builds.png"><img src="imagens/jenkins_builds.png" alt="Jenkins Builds"></a>
 </p>
+</details>
 
 ---
 
