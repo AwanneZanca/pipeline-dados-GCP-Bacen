@@ -46,13 +46,24 @@ CI/CD: GitHub → Jenkins → validação → deploy automático
 
 ### Dashboard — Looker Studio
 
-| Visão Geral | Inflação Detalhada |
-|---|---|
-| ![Visão Geral](imagens/painel_1.png) | ![Inflação](imagens/painel_2.png) |
-
-| Mercado de Trabalho | Atividade Econômica |
-|---|---|
-| ![Mercado de Trabalho](imagens/painel_3.png) | ![Atividade Econômica](imagens/painel_4.png) |
+<table>
+  <tr>
+    <th align="center">Visão Geral</th>
+    <th align="center">Inflação Detalhada</th>
+  </tr>
+  <tr>
+    <td align="center"><img src="imagens/painel_1.png" width="420"></td>
+    <td align="center"><img src="imagens/painel_2.png" width="420"></td>
+  </tr>
+  <tr>
+    <th align="center">Mercado de Trabalho</th>
+    <th align="center">Atividade Econômica</th>
+  </tr>
+  <tr>
+    <td align="center"><img src="imagens/painel_3.png" width="420"></td>
+    <td align="center"><img src="imagens/painel_4.png" width="420"></td>
+  </tr>
+</table>
 
 ### BigQuery — Camada Bronze
 
