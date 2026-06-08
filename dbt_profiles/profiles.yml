@@ -1,0 +1,14 @@
+dbt_bacen:
+  outputs:
+    dev:
+      type: bigquery
+      method: service-account
+      project: voltaic-reducer-396401
+      dataset: dados_economicos
+      keyfile: /opt/airflow/gcp_credentials.json
+      location: us-central1
+      threads: 4
+      job_execution_timeout_seconds: 300
+      job_retries: 1
+      priority: interactive
+  target: dev

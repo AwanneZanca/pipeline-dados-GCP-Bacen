@@ -27,6 +27,7 @@ x-airflow-common:
     - ${AIRFLOW_PROJ_DIR:-.}/config:/opt/airflow/config
     - ${AIRFLOW_PROJ_DIR:-.}/plugins:/opt/airflow/plugins
     - ${AIRFLOW_PROJ_DIR:-.}/dbt_bacen:/opt/airflow/dbt_bacen
+    - ${AIRFLOW_PROJ_DIR:-.}/dbt_profiles:/opt/airflow/dbt_profiles
     - /home/zanca_awanne/gcp_credentials.json:/opt/airflow/gcp_credentials.json
   user: "${AIRFLOW_UID:-50000}:0"
   depends_on:
