@@ -129,6 +129,14 @@ dbt test --no-partial-parse
 </details>
 
 <details>
+<summary><b>Airflow — DAGs em Execução</b></summary>
+<br>
+<p align="center">
+  <a href="imagens/airflow_dags.png"><img src="imagens/airflow_dags.png" alt="Airflow DAGs"></a>
+</p>
+</details>
+
+<details>
 <summary><b>CI/CD — Jenkins Builds</b></summary>
 <br>
 <p align="center">
