@@ -134,7 +134,7 @@ services:
         echo "Running airflow config list to create default config file if missing."
         /entrypoint airflow config list >/dev/null
         echo "Change ownership of files in /opt/airflow to ${AIRFLOW_UID}:0"
-        chown -v -R "${AIRFLOW_UID}:0" /opt/airflow/{logs,plugins,config}
+        chown -v -R "${AIRFLOW_UID}:0" /opt/airflow/{logs,plugins,config,dbt_bacen}
     environment:
       <<: *airflow-common-env
       _AIRFLOW_DB_MIGRATE: 'true'
