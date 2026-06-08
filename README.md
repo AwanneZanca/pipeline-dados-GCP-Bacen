@@ -204,7 +204,7 @@ Busca indicadores macroeconômicos via API SIDRA do IBGE e salva no BigQuery (ca
 ---
 
 ### dbt_pipeline
-Roda os modelos dbt após o BACEN — popula Silver e Gold.
+Roda os modelos dbt diariamente às 00:30, após o pipeline do BACEN. Atualiza as camadas Silver e Gold no BigQuery.
 
 ---
 
