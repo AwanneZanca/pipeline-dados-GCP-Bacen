@@ -42,37 +42,99 @@ CI/CD: GitHub → Jenkins → validação → deploy automático
 
 ---
 
+## 🚀 Como Rodar Localmente
+
+```bash
+# 1. Clone o repositório
+git clone https://github.com/AwanneZanca/pipeline-dados-GCP-Bacen.git
+cd pipeline-dados-GCP-Bacen
+
+# 2. Configure as variáveis de ambiente
+cp .env.example .env
+# Edite o .env com sua FERNET_KEY e credenciais GCP
+
+# 3. Suba os containers
+docker compose up -d
+
+# 4. Acesse o Airflow
+# http://localhost:8080 (usuário: airflow / senha: airflow)
+
+# 5. Execute as transformações dbt
+cd dbt_bacen
+dbt run --no-partial-parse
+dbt test --no-partial-parse
+```
+
+> **Pré-requisitos:** Docker, Docker Compose e uma conta GCP com BigQuery habilitado.
+
+---
+
 ## 📸 Screenshots
 
-### Dashboard — Looker Studio
+> 💡 Clique no título para abrir • Clique na imagem para ampliar
 
-| Visão Geral | Inflação Detalhada |
-|---|---|
-| ![Visão Geral](imagens/painel_1.png) | ![Inflação](imagens/painel_2.png) |
+<details>
+<summary><b>Dashboard — Looker Studio</b></summary>
+<br>
+<table>
+  <tr>
+    <th align="center">Visão Geral</th>
+    <th align="center">Inflação Detalhada</th>
+  </tr>
+  <tr>
+    <td align="center"><a href="imagens/painel_1.png"><img src="imagens/painel_1.png" width="420"></a></td>
+    <td align="center"><a href="imagens/painel_2.png"><img src="imagens/painel_2.png" width="420"></a></td>
+  </tr>
+  <tr>
+    <th align="center">Mercado de Trabalho</th>
+    <th align="center">Atividade Econômica</th>
+  </tr>
+  <tr>
+    <td align="center"><a href="imagens/painel_3.png"><img src="imagens/painel_3.png" width="420"></a></td>
+    <td align="center"><a href="imagens/painel_4.png"><img src="imagens/painel_4.png" width="420"></a></td>
+  </tr>
+</table>
+</details>
 
-| Mercado de Trabalho | Atividade Econômica |
-|---|---|
-| ![Mercado de Trabalho](imagens/painel_3.png) | ![Atividade Econômica](imagens/painel_4.png) |
-
-### BigQuery — Camada Bronze
+<details>
+<summary><b>BigQuery — Camada Bronze</b></summary>
+<br>
 
 | bacen | ibge |
 |---|---|
-| ![Bronze BACEN](imagens/bronze_bacen.png) | ![Bronze IBGE](imagens/bronze_ibge.png) |
+| [![Bronze BACEN](imagens/bronze_bacen.png)](imagens/bronze_bacen.png) | [![Bronze IBGE](imagens/bronze_ibge.png)](imagens/bronze_ibge.png) |
 
-### BigQuery — Camada Gold
+</details>
+
+<details>
+<summary><b>BigQuery — Camada Gold</b></summary>
+<br>
 
 | dim_indicador | dim_tempo |
 |---|---|
-| ![dim_indicador](imagens/ind_gold.png) | ![dim_tempo](imagens/tempo_gold.png) |
+| [![dim_indicador](imagens/ind_gold.png)](imagens/ind_gold.png) | [![dim_tempo](imagens/tempo_gold.png)](imagens/tempo_gold.png) |
 
-**fato_indicadores**
+| **fato_indicadores** |
+|:---:|
+| [![fato_indicadores](imagens/fato_gold.png)](imagens/fato_gold.png) |
 
-![fato_indicadores](imagens/fato_gold.png)
+</details>
 
-### dbt — 38 Testes Passando
+<details>
+<summary><b>dbt — 38 Testes Passando</b></summary>
+<br>
+<p align="center">
+  <a href="imagens/dbt_tests.png"><img src="imagens/dbt_tests.png" alt="dbt tests"></a>
+</p>
+</details>
 
-![dbt tests](imagens/dbt_tests.png)
+<details>
+<summary><b>CI/CD — Jenkins Builds</b></summary>
+<br>
+<p align="center">
+  <a href="imagens/jenkins_builds.png"><img src="imagens/jenkins_builds.png" alt="Jenkins Builds"></a>
+</p>
+</details>
 
 ---
 
