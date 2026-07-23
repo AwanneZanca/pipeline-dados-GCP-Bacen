@@ -10,34 +10,36 @@ Pipeline de dados completo rodando na GCP com orquestração, transformação, m
 
 ```mermaid
 flowchart TD
-    subgraph Fontes["APIs Públicas"]
-        BACEN[API BACEN<br/>Séries Temporais]
-        IBGE[API IBGE<br/>SIDRA]
+    BACEN[API BACEN - Series Temporais]
+    IBGE[API IBGE - SIDRA]
+
+    subgraph AF [Apache Airflow]
+        BH[BacenHook]
+        BO[BacenOperator - 7 indicadores]
+        IH[IbgeHook]
+        IO[IbgeOperator - 6 indicadores]
+        BH --> BO
+        IH --> IO
     end
 
-    subgraph AF["Apache Airflow - orquestração"]
-        BH[BacenHook] --> BO[BacenOperator<br/>7 indicadores econômicos]
-        IH[IbgeHook] --> IO[IbgeOperator<br/>6 indicadores macroeconômicos]
+    subgraph BQ [BigQuery - Medallion]
+        Bronze[Bronze - dados brutos]
+        Silver[Silver - dbt]
+        Gold[Gold - Star Schema]
+        Bronze --> Silver
+        Silver --> Gold
     end
 
-    subgraph BQ["BigQuery - Medallion Architecture"]
-        Bronze[(Bronze<br/>dados brutos)]
-        Silver[(Silver<br/>dbt - dados limpos)]
-        Gold[(Gold<br/>dbt - Star Schema)]
-        Bronze --> Silver --> Gold
-    end
-
-    Looker[Looker Studio<br/>4 páginas - 12 meses de histórico]
+    Looker[Looker Studio]
+    Jenkins[Jenkins CI/CD]
 
     BACEN --> BH
     IBGE --> IH
     BO --> Bronze
     IO --> Bronze
     Gold --> Looker
-
-    Git[git push] -->|webhook| Jenkins[Jenkins<br/>valida + deploy]
-    Jenkins -->|deploy| BH
-    Jenkins -->|deploy| IH
+    Jenkins --> BH
+    Jenkins --> IH
 ```
 
 ---
