@@ -1,6 +1,6 @@
-# 📊 Portfolio de Dados — End-to-End Pipeline na GCP
+# 📊 Portfolio de Dados - End-to-End Pipeline na GCP
 
-Pipeline de dados completo rodando na GCP com orquestração, transformação, modelagem e visualização — usando ferramentas reais de mercado.
+Pipeline de dados completo rodando na GCP com orquestração, transformação, modelagem e visualização - usando ferramentas reais de mercado.
 
 > 🔗 [Ver dashboard ao vivo](https://datastudio.google.com/reporting/4bb981cb-9bef-4c27-aa22-1dca3d11bc7b)
 
@@ -8,21 +8,34 @@ Pipeline de dados completo rodando na GCP com orquestração, transformação, m
 
 ## 🏗️ Arquitetura
 
-```
-API Pública (BACEN + IBGE SIDRA)
-        ↓
-Apache Airflow (orquestração)
-  ├── BacenHook → BacenOperator → 7 indicadores econômicos
-  └── IbgeHook  → IbgeOperator  → 6 indicadores macroeconômicos
-        ↓
-BigQuery — Medallion Architecture
-  ├── Bronze → dados brutos (Airflow)
-  ├── Silver → dados limpos (dbt)
-  └── Gold   → dados analíticos (dbt) — Star Schema
-        ↓
-Looker Studio (dashboard com 4 páginas — 12 meses de histórico)
+```mermaid
+flowchart TD
+    subgraph Fontes["APIs Públicas"]
+        BACEN[API BACEN<br/>Séries Temporais]
+        IBGE[API IBGE<br/>SIDRA]
+    end
 
-CI/CD: GitHub → Jenkins → validação → deploy automático
+    subgraph AF["Apache Airflow - orquestração"]
+        BH[BacenHook] --> BO[BacenOperator<br/>7 indicadores econômicos]
+        IH[IbgeHook] --> IO[IbgeOperator<br/>6 indicadores macroeconômicos]
+    end
+
+    subgraph BQ["BigQuery - Medallion Architecture"]
+        Bronze[(Bronze<br/>dados brutos)]
+        Silver[(Silver<br/>dbt - dados limpos)]
+        Gold[(Gold<br/>dbt - Star Schema)]
+        Bronze --> Silver --> Gold
+    end
+
+    Looker[Looker Studio<br/>4 páginas - 12 meses de histórico]
+
+    BACEN --> BH
+    IBGE --> IH
+    BO --> Bronze
+    IO --> Bronze
+    Gold --> Looker
+
+    GitHub[git push] -->|webhook| Jenkins[Jenkins<br/>valida + deploy] --> AF
 ```
 
 ---
@@ -74,7 +87,7 @@ dbt test --no-partial-parse
 > 💡 Clique no título para abrir • Clique na imagem para ampliar
 
 <details>
-<summary><b>Dashboard — Looker Studio</b></summary>
+<summary><b>Dashboard - Looker Studio</b></summary>
 <br>
 <table>
   <tr>
@@ -97,7 +110,7 @@ dbt test --no-partial-parse
 </details>
 
 <details>
-<summary><b>BigQuery — Camada Bronze</b></summary>
+<summary><b>BigQuery - Camada Bronze</b></summary>
 <br>
 
 | bacen | ibge |
@@ -107,7 +120,7 @@ dbt test --no-partial-parse
 </details>
 
 <details>
-<summary><b>BigQuery — Camada Gold</b></summary>
+<summary><b>BigQuery - Camada Gold</b></summary>
 <br>
 
 | dim_indicador | dim_tempo |
@@ -121,7 +134,7 @@ dbt test --no-partial-parse
 </details>
 
 <details>
-<summary><b>dbt — 38 Testes Passando</b></summary>
+<summary><b>dbt - 38 Testes Passando</b></summary>
 <br>
 <p align="center">
   <a href="imagens/dbt_tests.png"><img src="imagens/dbt_tests.png" alt="dbt tests"></a>
@@ -129,7 +142,7 @@ dbt test --no-partial-parse
 </details>
 
 <details>
-<summary><b>Airflow — DAGs em Execução</b></summary>
+<summary><b>Airflow - DAGs em Execução</b></summary>
 <br>
 <p align="center">
   <a href="imagens/airflow_dags.png"><img src="imagens/airflow_dags.png" alt="Airflow DAGs"></a>
@@ -137,7 +150,7 @@ dbt test --no-partial-parse
 </details>
 
 <details>
-<summary><b>CI/CD — Jenkins Builds</b></summary>
+<summary><b>CI/CD - Jenkins Builds</b></summary>
 <br>
 <p align="center">
   <a href="imagens/jenkins_builds.png"><img src="imagens/jenkins_builds.png" alt="Jenkins Builds"></a>
@@ -151,8 +164,8 @@ dbt test --no-partial-parse
 ```
 pipeline-dados-GCP-Bacen/
   ├── dags/               → DAGs do Airflow
-  ├── hooks/              → BacenHook e IbgeHook — conexão com APIs
-  ├── operators/          → BacenOperator e IbgeOperator — tasks customizadas
+  ├── hooks/              → BacenHook e IbgeHook - conexão com APIs
+  ├── operators/          → BacenOperator e IbgeOperator - tasks customizadas
   ├── dbt_bacen/          → Projeto dbt
   │   ├── macros/         → generate_schema_name (Medallion)
   │   ├── models/
@@ -210,7 +223,7 @@ Roda os modelos dbt diariamente às 00:30, após o pipeline do BACEN. Atualiza a
 
 ## 🔌 Hooks & Operators Customizados
 
-**BacenHook** — conexão com a API de Séries Temporais do BACEN:
+**BacenHook** - conexão com a API de Séries Temporais do BACEN:
 ```python
 # Modo incremental
 hook = BacenHook(serie=11, registros=1)
@@ -222,7 +235,7 @@ dados = hook.get_dados()
 # → [{"data": "01/06/2026", "valor": "0.0534"}]
 ```
 
-**IbgeHook** — conexão com a API SIDRA do IBGE:
+**IbgeHook** - conexão com a API SIDRA do IBGE:
 ```python
 hook = IbgeHook(
     tabela=7060,
@@ -253,7 +266,7 @@ Silver → dados_economicos_silver
 Gold → dados_economicos_gold
   ├── dim_tempo          → dimensão calendário diária (TABLE)
   ├── dim_indicador      → metadados dos indicadores (TABLE)
-  └── fato_indicadores   → tabela fato — Star Schema (TABLE)
+  └── fato_indicadores   → tabela fato - Star Schema (TABLE)
                             particionada por mês
                             clusterizada por fonte/categoria/indicador
 ```
@@ -261,7 +274,7 @@ Gold → dados_economicos_gold
 **38 testes de qualidade:**
 - `not_null` e `unique` nas surrogate keys
 - `accepted_values` em fonte e indicadores
-- `relationships` — integridade referencial FK → PK entre fato e dimensões
+- `relationships` - integridade referencial FK → PK entre fato e dimensões
 
 ---
 
@@ -272,7 +285,7 @@ Gold → dados_economicos_gold
             |
             | fk_tempo
             |
-dim_indicador — fk_indicador — fato_indicadores
+dim_indicador - fk_indicador - fato_indicadores
 ```
 
 A `fato_indicadores` contém por linha: `valor`, `variacao_absoluta`, `variacao_percentual`, `media_movel_30d` e `media_movel_90d`.
@@ -300,13 +313,13 @@ Deploy automático pro Airflow
 
 ---
 
-## 📊 Dashboard — Looker Studio
+## 📊 Dashboard - Looker Studio
 
 4 páginas cobrindo os principais temas econômicos do Brasil:
 
 | Página | Conteúdo |
 |---|---|
-| Visão Geral | Selic, Câmbio, IPCA, Desemprego — scorecards + gráficos |
+| Visão Geral | Selic, Câmbio, IPCA, Desemprego - scorecards + gráficos |
 | Inflação Detalhada | IPCA por categoria (Alimentação, Habitação, Transportes) + IGP-M |
 | Mercado de Trabalho | Desemprego Brasil histórico + comparativo por região |
 | Atividade Econômica | PIB Trimestral + Crédito Total |
@@ -328,7 +341,7 @@ Deploy automático pro Airflow
 
 **Awanne Beatriz Zanca**
 
-Analista de Dados com foco em Analytics Engineering — 4+ anos de experiência em Stone, Raízen, Bosch e IBM.
+Analista de Dados com foco em Analytics Engineering - 4+ anos de experiência em Stone, Raízen, Bosch e IBM.
 
 - LinkedIn: [awanne-zanca](https://linkedin.com/in/awanne-zanca)
 - GitHub: [AwanneZanca](https://github.com/AwanneZanca)
