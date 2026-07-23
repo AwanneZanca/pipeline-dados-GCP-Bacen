@@ -35,7 +35,9 @@ flowchart TD
     IO --> Bronze
     Gold --> Looker
 
-    GitHub[git push] -->|webhook| Jenkins[Jenkins<br/>valida + deploy] --> AF
+    Git[git push] -->|webhook| Jenkins[Jenkins<br/>valida + deploy]
+    Jenkins -->|deploy| BH
+    Jenkins -->|deploy| IH
 ```
 
 ---
